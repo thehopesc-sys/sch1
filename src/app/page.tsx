@@ -99,13 +99,13 @@ export default async function Home() {
       </section>
       <section id="about" className="border-t border-white/10 bg-slate-900/70">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-10 sm:py-20">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div>
               <p className="landing-eyebrow text-blue-300">A better school day</p>
               <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">A welcoming place to learn, grow, and belong.</h2>
               <ReadMoreText text={description} className="mt-5 max-w-2xl text-base leading-8 text-slate-400" />
             </div>
-            <div id="highlights" className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div id="highlights" className="grid gap-3 sm:grid-cols-2">
               {(content.whyUs.length ? content.whyUs : [
                 { id: "1", number: "01", title: "Clear communication", description: "Families stay connected to school life.", tone: "blue" },
                 { id: "2", number: "02", title: "Focused learning", description: "Teachers help every learner make progress.", tone: "emerald" },
