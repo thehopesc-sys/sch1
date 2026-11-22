@@ -1274,37 +1274,25 @@ main .shadow-sm {
     linear-gradient(140deg, rgb(255 255 255 / 0.07), rgb(2 6 23 / 0.24));
 }
 
-/* --- Landing hero cover ---------------------------------------------------
-   Desktop fills the hero with a landscape cover. Phones render the image at
-   its natural ratio so the complete uploaded photo stays visible. */
-.landing-cover {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-}
+/* --- Landing hero -------------------------------------------------------- */
 .landing-hero {
-  isolation: isolate;
+  background:
+    radial-gradient(50rem 34rem at 88% 38%, rgb(30 64 175 / 0.16), transparent 72%),
+    #020617;
 }
-.landing-hero-overlay {
-  background-image:
-    radial-gradient(circle at 75% 20%, rgb(59 130 246 / 0.28), transparent 35%),
-    linear-gradient(120deg, rgb(2 6 23 / 0.82), rgb(2 6 23 / 0.32), rgb(2 6 23 / 0.72));
+.landing-hero-photo {
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 1.5rem;
+  background: #0f172a;
+  box-shadow: 0 24px 60px -44px rgb(59 130 246 / 0.65);
 }
-.landing-hero::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 12rem;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(to top, rgb(2 6 23), transparent);
-}
-.landing-hero > *:not(.landing-cover):not(.landing-hero-overlay) {
-  position: relative;
-  z-index: 2;
+.landing-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
 }
 .landing-cta-primary {
   background: linear-gradient(135deg, rgb(59 130 246), rgb(37 99 235));
@@ -1328,39 +1316,6 @@ main .shadow-sm {
 .landing-stat {
   box-shadow: inset 0 1px rgb(255 255 255 / 0.1), 0 20px 35px -30px rgb(0 0 0 / 0.8);
 }
-@media (max-width: 1023px) {
-  .landing-hero {
-    display: flex;
-    flex-direction: column;
-  }
-  .landing-nav {
-    order: 1;
-    padding-inline: 0;
-  }
-  .landing-page .landing-cover {
-    position: relative;
-    inset: auto;
-    order: 2;
-    width: 100%;
-    height: auto;
-    max-height: none;
-    object-fit: contain;
-    object-position: center;
-    border-radius: 1rem;
-    opacity: 1;
-    margin-top: 0.75rem;
-  }
-  .landing-hero-overlay {
-    display: none;
-  }
-  .landing-hero::after {
-    display: none;
-  }
-  .landing-hero > .relative.z-10 {
-    order: 3;
-  }
-}
-
 .landing-feature { position: relative; display: block; min-height: 10rem; border: 1px solid rgb(255 255 255 / 0.08); border-radius: 1.25rem; padding: 1.25rem; overflow: hidden; transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
 .landing-feature::after { content: ""; position: absolute; right: -2rem; top: -2rem; width: 7rem; height: 7rem; border-radius: 999px; background: rgb(59 130 246 / 0.12); filter: blur(2px); }
 .landing-feature:hover { border-color: rgb(125 211 252 / 0.35); background: rgb(255 255 255 / 0.04); transform: translateY(-0.25rem); }
@@ -1466,21 +1421,17 @@ main .shadow-sm {
 }
 .student-id-mark {
   display: grid;
-  height: 3rem;
-  width: 3rem;
+  height: 4rem;
+  width: 4rem;
   flex: none;
   place-items: center;
-  border: 2px solid rgb(255 255 255 / 0.7);
-  border-radius: 0.85rem;
-  background: rgb(255 255 255 / 0.18);
-  font-size: 1.3rem;
+  font-size: 1.75rem;
   font-weight: 800;
 }
 .student-id-mark img {
   height: 100%;
   width: 100%;
   object-fit: contain;
-  border-radius: 0.65rem;
 }
 .student-id-school {
   min-width: 0;
@@ -1586,13 +1537,13 @@ main .shadow-sm {
   }
   .student-id-card-topline {
     display: grid;
-    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
     gap: 0.65rem;
     padding: 0.85rem 0.9rem;
   }
   .student-id-mark {
-    height: 2.75rem;
-    width: 2.75rem;
+    height: 3.25rem;
+    width: 3.25rem;
   }
   .student-id-school {
     font-size: 0.78rem;

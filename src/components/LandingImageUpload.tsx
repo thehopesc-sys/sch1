@@ -87,7 +87,7 @@ export default function LandingImageUpload({ kind, value, onChange, label = "Ima
       <p className="text-sm font-medium text-slate-700">{label}</p>
       <div className="mt-2 flex flex-col items-start gap-3">
         {/* Preview frame */}
-        <div className={`grid shrink-0 place-items-center overflow-hidden bg-slate-100 text-xs text-slate-400 ${frameClass}`}>
+        <div className={`grid shrink-0 place-items-center overflow-hidden ${kind === "logo" ? "bg-transparent" : "bg-slate-100"} text-xs text-slate-400 ${frameClass}`}>
           {hasImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" className={`h-full w-full ${kind === "logo" ? "object-contain p-1" : "object-cover"}`} />

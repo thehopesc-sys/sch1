@@ -16,7 +16,7 @@ export default async function AdminStudentIdCardPage({ params }: { params: Promi
   await connectToDatabase();
   const student = await Student.findById((await params).id).lean();
   if (!student) notFound();
-  const school = session.user.school ? await SchoolConfiguration.findById(session.user.school).select("schoolName schoolAddress schoolPhone schoolIcon").lean() : null;
+  const school = session.user.school ? await SchoolConfiguration.findById(session.user.school).select("schoolName schoolAddress schoolPhone schoolIcon logo").lean() : null;
   const qrToken = await ensureStudentAttendanceQrToken(String(student._id));
   const qrCodeDataUrl = await QRCode.toDataURL(qrToken, { width: 256, margin: 1 });
 
@@ -31,7 +31,7 @@ export default async function AdminStudentIdCardPage({ params }: { params: Promi
           schoolName={school?.schoolName ?? "School"}
           schoolAddress={school?.schoolAddress ?? ""}
           schoolPhone={school?.schoolPhone ?? ""}
-          schoolIcon={school?.schoolIcon || "/logo.png"}
+          schoolIcon={school?.schoolIcon || school?.logo || "/logo.png"}
           qrCodeDataUrl={qrCodeDataUrl}
           student={student}
         />

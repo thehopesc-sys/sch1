@@ -71,29 +71,32 @@ export default async function Home() {
 
   return (
     <main className="landing-page min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-      <section className="landing-hero relative w-full overflow-hidden px-4 pb-14 sm:px-10 sm:pb-20 lg:pb-28">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={coverImage} alt="" aria-hidden fetchPriority="high" className="landing-cover opacity-75" />
-        <div aria-hidden className="landing-hero-overlay pointer-events-none absolute inset-0" />
+      <section className="landing-hero relative w-full">
         <LandingNav schoolName={schoolName} logo={logo} />
-        <div className="relative z-10 mx-auto max-w-7xl pt-10 sm:pt-16 lg:pt-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-400 sm:text-sm sm:tracking-[0.22em]">Welcome to</p>
-          <h1 className="mt-4 max-w-3xl text-[clamp(1.75rem,8vw,3.75rem)] font-bold leading-[1.1] tracking-tight sm:mt-6">{schoolName}</h1>
-          <p className="mt-5 max-w-xl whitespace-pre-wrap break-words text-base leading-7 text-slate-400 sm:mt-7 sm:text-lg sm:leading-8">{heroLead}</p>
-          <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
-            <Link href="/login" className="landing-cta-primary rounded-2xl px-6 py-3.5 text-center font-semibold text-white">Open your workspace <span aria-hidden>→</span></Link>
-            <Link href="/about-us" className="landing-cta-secondary rounded-2xl px-6 py-3.5 text-center font-semibold text-slate-200">Discover our school</Link>
-          </div>
-          {stats.length ? (
-            <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 sm:mt-12">
-              {stats.map((stat) => (
-                <div key={stat.label} className="landing-stat rounded-2xl border border-white/10 bg-white/5 px-3 py-4 text-center backdrop-blur sm:px-5">
-                  <p className="text-xl font-bold tabular-nums sm:text-2xl">{formatCount(stat.value)}</p>
-                  <p className="mt-1 text-[0.65rem] font-semibold uppercase tracking-wide text-slate-400 sm:text-xs">{stat.label}</p>
-                </div>
-              ))}
+        <div className="landing-hero-layout mx-auto grid max-w-7xl items-center gap-8 px-4 py-7 sm:gap-10 sm:px-10 sm:py-10 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-14 lg:py-14">
+          <div className="landing-hero-copy order-2 min-w-0 md:order-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-400 sm:text-sm sm:tracking-[0.22em]">Welcome to</p>
+            <h1 className="mt-3 max-w-3xl text-[clamp(2rem,4vw,3.75rem)] font-bold leading-[1.08] tracking-tight text-white">{schoolName}</h1>
+            <p className="mt-4 max-w-xl whitespace-pre-wrap break-words text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">{heroLead}</p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
+              <Link href="/login" className="landing-cta-primary rounded-2xl px-5 py-3.5 text-center font-semibold text-white">Open your workspace <span aria-hidden>→</span></Link>
+              <Link href="/about-us" className="landing-cta-secondary rounded-2xl px-5 py-3.5 text-center font-semibold text-slate-200">Discover our school</Link>
             </div>
-          ) : null}
+            {stats.length ? (
+              <div className="mt-7 grid max-w-2xl grid-cols-3 gap-2 sm:mt-9 sm:gap-3">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="landing-stat rounded-2xl border border-white/10 bg-white/5 px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <p className="text-lg font-bold tabular-nums sm:text-2xl">{formatCount(stat.value)}</p>
+                    <p className="mt-1 text-[0.6rem] font-semibold uppercase tracking-wide text-slate-400 sm:text-xs">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className="landing-hero-photo order-1 min-w-0 md:order-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={coverImage} alt={`${schoolName} campus`} fetchPriority="high" className="landing-cover" />
+          </div>
         </div>
       </section>
       <section id="about" className="border-t border-white/10 bg-slate-900/70">

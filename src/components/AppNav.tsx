@@ -196,13 +196,13 @@ function AppNavFrame({ items, userName, roleLabel, schoolName = "School", school
     </div>
   );
 
-  function brand(compact: boolean, drawer = false) {
+  function brand(compact: boolean) {
     return (
       <Link href={homeHref} className="flex min-w-0 items-center gap-3 text-sm font-bold tracking-wide text-slate-800">
-        <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-blue-600 text-lg text-white">
-          {schoolLogo ? <Image src={schoolLogo} alt="" width={40} height={40} className="h-full w-full object-cover" unoptimized /> : schoolName.charAt(0).toUpperCase()}
+        <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden text-2xl font-bold text-blue-700">
+          {schoolLogo ? <Image src={schoolLogo} alt="" width={56} height={56} className="h-full w-full object-contain" unoptimized /> : schoolName.charAt(0).toUpperCase()}
         </span>
-        <span className={`min-w-0 ${drawer ? "break-words leading-tight" : "truncate"} ${compact ? "" : "hidden lg:inline"}`}>{schoolName}</span>
+        <span className={`min-w-0 line-clamp-2 break-words leading-tight ${compact ? "" : "hidden lg:inline"}`}>{schoolName}</span>
       </Link>
     );
   }
@@ -355,7 +355,7 @@ function AppNavFrame({ items, userName, roleLabel, schoolName = "School", school
             className="app-nav-drawer print:hidden fixed inset-y-0 left-0 z-[60] flex w-[min(92%,20rem)] max-w-xs flex-col border-r border-slate-200 bg-slate-50 px-4 py-5 lg:hidden"
           >
             <div className="shrink-0 flex items-center justify-between gap-3">
-              {brand(true, true)}
+              {brand(true)}
               <div className="flex items-center gap-2">
               <NoticeBell href={noticesHref} />
               <button
