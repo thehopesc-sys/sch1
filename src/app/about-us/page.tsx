@@ -7,10 +7,10 @@ import ReadMoreText from "@/components/ReadMoreText";
 export const dynamic = "force-dynamic";
 
 export default async function AboutUsPage() {
-  let school: { schoolName?: string; schoolDescription?: string; schoolAddress?: string; schoolPhone?: string; schoolEmail?: string; academicYear?: string } | null = null;
+  let school: { schoolName?: string; schoolDescription?: string; schoolAddress?: string; schoolPhone?: string; schoolEmail?: string; academicYear?: string; logo?: string } | null = null;
   try {
     await connectToDatabase();
-    school = await SchoolConfiguration.findOne().sort({ updatedAt: -1, createdAt: -1 }).select("schoolName schoolDescription schoolAddress schoolPhone schoolEmail academicYear").lean();
+    school = await SchoolConfiguration.findOne().sort({ updatedAt: -1, createdAt: -1 }).select("schoolName schoolDescription schoolAddress schoolPhone schoolEmail academicYear logo").lean();
   } catch {
     // The page can still explain the product before setup is complete.
   }
@@ -19,7 +19,7 @@ export default async function AboutUsPage() {
   const description = school?.schoolDescription || "A connected school community built around clear communication, thoughtful teaching, and confident learning.";
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
-      <LandingNav schoolName={schoolName} />
+      <LandingNav schoolName={schoolName} logo={school?.logo || "/logo.png"} />
       <section className="public-page mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-10 sm:pb-24 sm:pt-20">
         <div className="max-w-3xl"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-400 sm:text-sm sm:tracking-[0.22em]">About our school</p><h1 className="mt-4 text-[clamp(1.75rem,8vw,4.5rem)] font-bold leading-tight tracking-tight sm:mt-5">{schoolName}</h1><ReadMoreText text={description} className="mt-5 text-base leading-7 text-slate-400 sm:mt-7 sm:text-lg sm:leading-8" /></div>
         <div className="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-3 sm:gap-5">

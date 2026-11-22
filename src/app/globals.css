@@ -1281,18 +1281,27 @@ main .shadow-sm {
     #020617;
 }
 .landing-hero-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.55;
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 1.5rem;
   background: #0f172a;
-  box-shadow: 0 24px 60px -44px rgb(59 130 246 / 0.65);
+  box-shadow: 0 30px 70px -38px rgb(30 64 175 / 0.8);
 }
-.landing-cover {
+.landing-hero-photo .landing-cover {
   display: block;
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
+}
+@media (min-width: 1024px) {
+  .landing-hero-photo {
+    height: clamp(22rem, 26vw, 29rem);
+    aspect-ratio: auto;
+  }
 }
 .landing-cta-primary {
   background: linear-gradient(135deg, rgb(59 130 246), rgb(37 99 235));
