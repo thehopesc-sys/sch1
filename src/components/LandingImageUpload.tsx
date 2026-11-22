@@ -16,7 +16,7 @@ import { useState, type ChangeEvent } from "react";
 type Kind = "cover" | "logo" | "principal" | "topStudent" | "news" | "gallery";
 const recommendedDimensions: Record<Kind, string> = {
   cover: "1600 × 900 px or larger (landscape)",
-  logo: "512 × 512 px (square)",
+  logo: "1024 × 1024 px or larger (square)",
   principal: "800 × 800 px (square)",
   topStudent: "800 × 800 px (square)",
   news: "1200 × 800 px (landscape)",
@@ -39,6 +39,7 @@ type Props = {
 export default function LandingImageUpload({ kind, value, onChange, label = "Image", frameClass = "h-40 w-full sm:w-40", hint }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [dimensions, setDimensions] = useState("");
 
   async function upload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -46,7 +47,17 @@ export default function LandingImageUpload({ kind, value, onChange, label = "Ima
     if (!file) return;
     setBusy(true);
     setError("");
+    setDimensions("");
     try {
+      let bitmap: ImageBitmap;
+      try {
+        bitmap = await createImageBitmap(file);
+      } catch {
+        setError("Could not read the selected image dimensions. Please choose another image.");
+        return;
+      }
+      setDimensions(`${bitmap.width} × ${bitmap.height} px`);
+      bitmap.close();
       const form = new FormData();
       form.append("file", file);
       form.append("kind", kind);
@@ -65,6 +76,7 @@ export default function LandingImageUpload({ kind, value, onChange, label = "Ima
   }
 
   function remove() {
+    setDimensions("");
     onChange("", "");
   }
 
@@ -120,7 +132,10 @@ export default function LandingImageUpload({ kind, value, onChange, label = "Ima
         </div>
       </div>
 
-      <p className="mt-2 text-xs text-slate-500">Recommended: {recommendedDimensions[kind]}. The display crops responsively without stretching.</p>
+      <p className="mt-2 text-xs text-slate-500">
+        {dimensions ? <>Selected image: {dimensions}. </> : null}
+        Recommended: {recommendedDimensions[kind]}. {kind === "cover" ? "Fully visible on phones; desktop may crop the edges to fill the banner." : kind === "logo" ? "Shown fully without cropping." : "Displayed in a responsive frame without stretching."}
+      </p>
       {hint && <p className="mt-1 text-xs text-slate-400 max-w-xs sm:max-w-[16rem]">{hint}</p>}
       {error && <p className="mt-2 text-xs text-rose-600">{error}</p>}
     </div>

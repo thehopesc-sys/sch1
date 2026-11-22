@@ -53,7 +53,7 @@ export default async function Home() {
   const news = publishedNews(content);
   const achievers = visibleTopStudents(content);
   const gallery = visibleGallery(content);
-  const heroLead = content.tagline || description;
+  const heroLead = content.tagline || "A school community focused on learning, character, and future success.";
   const social = (school?.socialMedia ?? {}) as Record<string, unknown>;
   const socialLinks = [
     { label: "Facebook", value: text(social.facebook), icon: "f" },
@@ -74,8 +74,7 @@ export default async function Home() {
       <section className="landing-hero relative w-full overflow-hidden px-4 pb-14 sm:px-10 sm:pb-20 lg:pb-28">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={coverImage} alt="" aria-hidden fetchPriority="high" className="landing-cover opacity-75" />
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgb(59_130_246_/_0.28),transparent_35%),linear-gradient(120deg,rgb(2_6_23_/_0.92),rgb(2_6_23_/_0.42),rgb(2_6_23_/_0.82))]" />
-        <div aria-hidden className="landing-cover-fade" />
+        <div aria-hidden className="landing-hero-overlay pointer-events-none absolute inset-0" />
         <LandingNav schoolName={schoolName} logo={logo} />
         <div className="relative z-10 mx-auto max-w-7xl pt-10 sm:pt-16 lg:pt-24">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-400 sm:text-sm sm:tracking-[0.22em]">Welcome to</p>
@@ -99,10 +98,12 @@ export default async function Home() {
       </section>
       <section id="about" className="border-t border-white/10 bg-slate-900/70">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-10 sm:py-20">
-          <div className="max-w-4xl">
-            <p className="landing-eyebrow text-blue-300">A better school day</p>
-            <h2 className="mt-3 max-w-3xl text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-tight tracking-tight text-white">A welcoming place to learn, grow, and belong.</h2>
-            <ReadMoreText text={description} className="mt-5 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg sm:leading-8" />
+          <div className="max-w-6xl">
+            <p className="landing-eyebrow text-blue-300">Introduction</p>
+            <h2 className="mt-3 max-w-4xl text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-tight tracking-tight text-white">A welcoming place to learn, grow, and belong.</h2>
+            <div className="mt-6 max-w-5xl border-l-2 border-blue-400/40 pl-4 sm:pl-6">
+              <ReadMoreText text={description} className="text-base leading-8 text-slate-300 sm:text-lg sm:leading-8" />
+            </div>
           </div>
         </div>
       </section>

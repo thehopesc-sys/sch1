@@ -19,7 +19,7 @@ const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const KINDS = new Set(["cover", "logo", "principal", "topStudent", "news", "gallery"]);
 
 function maxDimensionFor(kind: string) {
-  if (kind === "logo") return 512;
+  if (kind === "logo") return 1024;
   if (kind === "principal" || kind === "topStudent") return 800;
   return 1600;
 }
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     const folder = `school/${session.user.school ?? "shared"}/landing/${kind}`;
     try {
-      const uploaded = await uploadImage(compressed, folder, maxDimension);
+      const uploaded = await uploadImage(compressed, folder, maxDimension, kind === "logo");
       return NextResponse.json({ success: true, url: uploaded.secure_url, publicId: uploaded.public_id });
     } catch (error) {
       const cloudinary = cloudinaryError(error);

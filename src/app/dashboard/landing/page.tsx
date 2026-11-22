@@ -294,7 +294,7 @@ export default function LandingEditorPage() {
           </Panel>
 
           <Panel title="Brand logo" description="Shown in the site header and on the sign-in screen.">
-            <LandingImageUpload kind="logo" label="Logo" frameClass="h-20 w-20 rounded-xl" value={content.logo} onChange={(url, publicId) => patch({ logo: url, logoPublicId: publicId })} hint="A square PNG with a transparent background works best." />
+            <LandingImageUpload kind="logo" label="Logo" frameClass="h-20 w-20 rounded-xl" value={content.logo} onChange={(url, publicId) => patch({ logo: url, logoPublicId: publicId })} hint="Use a transparent PNG at least 1024 × 1024 px for crisp details. Re-upload the original high-resolution logo if the current one looks blurry." />
           </Panel>
         </div>
 

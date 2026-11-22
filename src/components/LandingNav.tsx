@@ -16,11 +16,11 @@ export default function LandingNav({ schoolName, logo }: Props) {
     <nav className="landing-nav relative z-20 w-full border-b border-white/10 px-4 py-3 sm:px-8 sm:py-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
         <Link href="/" className="flex min-w-0 items-center gap-3 text-sm font-bold tracking-wide">
-          <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden">
+          <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={logo || "/logo.png"} alt="" width={40} height={40} loading="eager" fetchPriority="high" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "/logo.png"; }} className="h-full w-full object-contain" />
+            <img src={logo || "/logo.png"} alt="" width={48} height={48} loading="eager" fetchPriority="high" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "/logo.png"; }} className="h-full w-full object-contain" />
           </span>
-          <span className="truncate">{schoolName}</span>
+          <span className="min-w-0 line-clamp-2 break-words leading-tight lg:truncate lg:whitespace-nowrap">{schoolName}</span>
         </Link>
         <div className="hidden items-center gap-1 lg:flex lg:gap-2">
           <a href="#about" className="landing-nav-link whitespace-nowrap px-3 py-2 text-sm font-medium">About</a>

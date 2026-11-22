@@ -1275,11 +1275,8 @@ main .shadow-sm {
 }
 
 /* --- Landing hero cover ---------------------------------------------------
-   The cover is a wide 16:9 photo (1672×941). On phones the hero is tall and
-   narrow, so covering the whole section crops it into a heavy zoom. Below
-   640px we pin the cover to a short banner at the top of the hero (the full
-   height of the photo is kept, only the sides crop) and fade its lower edge
-   into the page so it never looks stretched or over-zoomed. */
+   Desktop fills the hero with a landscape cover. Phones render the image at
+   its natural ratio so the complete uploaded photo stays visible. */
 .landing-cover {
   position: absolute;
   inset: 0;
@@ -1291,6 +1288,11 @@ main .shadow-sm {
 .landing-hero {
   isolation: isolate;
 }
+.landing-hero-overlay {
+  background-image:
+    radial-gradient(circle at 75% 20%, rgb(59 130 246 / 0.28), transparent 35%),
+    linear-gradient(120deg, rgb(2 6 23 / 0.82), rgb(2 6 23 / 0.32), rgb(2 6 23 / 0.72));
+}
 .landing-hero::after {
   content: "";
   position: absolute;
@@ -1300,7 +1302,7 @@ main .shadow-sm {
   pointer-events: none;
   background: linear-gradient(to top, rgb(2 6 23), transparent);
 }
-.landing-hero > *:not(.landing-cover):not(.landing-cover-fade) {
+.landing-hero > *:not(.landing-cover):not(.landing-hero-overlay) {
   position: relative;
   z-index: 2;
 }
@@ -1326,27 +1328,36 @@ main .shadow-sm {
 .landing-stat {
   box-shadow: inset 0 1px rgb(255 255 255 / 0.1), 0 20px 35px -30px rgb(0 0 0 / 0.8);
 }
-.landing-cover-fade {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  display: none;
-  height: 16rem;
-  background-image: linear-gradient(to bottom, transparent, rgb(2 6 23));
-  pointer-events: none;
-}
-@media (max-width: 639px) {
-  .landing-cover {
-    inset: 0 auto auto 0;
+@media (max-width: 1023px) {
+  .landing-hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .landing-nav {
+    order: 1;
+    padding-inline: 0;
+  }
+  .landing-page .landing-cover {
+    position: relative;
+    inset: auto;
+    order: 2;
     width: 100%;
     height: auto;
-    aspect-ratio: 16 / 9;
+    max-height: none;
     object-fit: contain;
-    object-position: center top;
+    object-position: center;
+    border-radius: 1rem;
+    opacity: 1;
+    margin-top: 0.75rem;
   }
-  .landing-cover-fade {
-    display: block;
-    height: min(18rem, 52vw);
+  .landing-hero-overlay {
+    display: none;
+  }
+  .landing-hero::after {
+    display: none;
+  }
+  .landing-hero > .relative.z-10 {
+    order: 3;
   }
 }
 
