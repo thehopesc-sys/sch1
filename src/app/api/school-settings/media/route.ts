@@ -47,10 +47,15 @@ export async function POST(request: Request) {
     const maxDimension = maxDimensionFor(kind);
     const original = Buffer.from(await file.arrayBuffer());
     let quality = 82;
-    const resize = () => sharp(original).rotate().resize({ width: maxDimension, height: maxDimension, fit: "inside", withoutEnlargement: true }).jpeg({ quality, mozjpeg: true }).toBuffer();
+    const resize = () => {
+      const image = sharp(original).rotate().resize({ width: maxDimension, height: maxDimension, fit: "inside", withoutEnlargement: true });
+      return kind === "logo"
+        ? image.png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer()
+        : image.jpeg({ quality, mozjpeg: true }).toBuffer();
+    };
     let compressed = await resize();
     // Step the quality down until the image is comfortably small.
-    while (compressed.length > 320 * 1024 && quality > 45) {
+    while (kind !== "logo" && compressed.length > 320 * 1024 && quality > 45) {
       quality -= 5;
       compressed = await resize();
     }

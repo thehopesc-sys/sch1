@@ -73,7 +73,7 @@ export default async function Home() {
     <main className="landing-page min-h-screen overflow-hidden bg-slate-950 text-slate-100">
       <section className="landing-hero relative w-full overflow-hidden px-4 pb-14 sm:px-10 sm:pb-20 lg:pb-28">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={coverImage} alt="" aria-hidden className="landing-cover opacity-75" />
+        <img src={coverImage} alt="" aria-hidden fetchPriority="high" className="landing-cover opacity-75" />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgb(59_130_246_/_0.28),transparent_35%),linear-gradient(120deg,rgb(2_6_23_/_0.92),rgb(2_6_23_/_0.42),rgb(2_6_23_/_0.82))]" />
         <div aria-hidden className="landing-cover-fade" />
         <LandingNav schoolName={schoolName} logo={logo} />
