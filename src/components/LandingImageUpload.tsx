@@ -78,7 +78,7 @@ export default function LandingImageUpload({ kind, value, onChange, label = "Ima
         <div className={`grid shrink-0 place-items-center overflow-hidden bg-slate-100 text-xs text-slate-400 ${frameClass}`}>
           {hasImage ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img src={value} alt="" className={`h-full w-full ${kind === "logo" ? "object-contain p-1" : "object-cover"}`} />
           ) : (
             <div className="flex flex-col items-center justify-center gap-2 p-4 text-center text-slate-400">
               <svg className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden="true">

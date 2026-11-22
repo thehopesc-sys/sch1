@@ -99,25 +99,32 @@ export default async function Home() {
       </section>
       <section id="about" className="border-t border-white/10 bg-slate-900/70">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-10 sm:py-20">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <div>
-              <p className="landing-eyebrow text-blue-300">A better school day</p>
-              <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">A welcoming place to learn, grow, and belong.</h2>
-              <ReadMoreText text={description} className="mt-5 max-w-2xl text-base leading-8 text-slate-400" />
-            </div>
-            <div id="highlights" className="grid gap-3 sm:grid-cols-2">
-              {(content.whyUs.length ? content.whyUs : [
-                { id: "1", number: "01", title: "Clear communication", description: "Families stay connected to school life.", tone: "blue" },
-                { id: "2", number: "02", title: "Focused learning", description: "Teachers help every learner make progress.", tone: "emerald" },
-                { id: "3", number: "03", title: "Confident futures", description: "Skills and character grow together.", tone: "violet" },
-              ]).map((item) => (
-                <article key={item.id || item.number} className={`landing-feature landing-feature-${item.tone} landing-reveal`}>
-                  <span className="landing-feature-number">{item.number}</span>
-                  <h3 className="font-semibold text-white">{item.title}</h3>
-                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-slate-400">{item.description}</p>
-                </article>
-              ))}
-            </div>
+          <div className="max-w-4xl">
+            <p className="landing-eyebrow text-blue-300">A better school day</p>
+            <h2 className="mt-3 max-w-3xl text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-tight tracking-tight text-white">A welcoming place to learn, grow, and belong.</h2>
+            <ReadMoreText text={description} className="mt-5 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg sm:leading-8" />
+          </div>
+        </div>
+      </section>
+      <section id="highlights" className="border-t border-white/10 bg-slate-950">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-10 sm:py-20">
+          <div className="max-w-3xl">
+            <p className="landing-eyebrow text-blue-300">Why families choose us</p>
+            <h2 className="mt-3 text-[clamp(1.6rem,3.5vw,2.25rem)] font-bold leading-tight tracking-tight text-white">A strong foundation for every learner.</h2>
+            <p className="mt-3 text-base leading-7 text-slate-400 sm:text-lg">Explore the people, values, and learning environment that make our school special.</p>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {(content.whyUs.length ? content.whyUs : [
+              { id: "1", number: "01", title: "Clear communication", description: "Families stay connected to school life.", tone: "blue" },
+              { id: "2", number: "02", title: "Focused learning", description: "Teachers help every learner make progress.", tone: "emerald" },
+              { id: "3", number: "03", title: "Confident futures", description: "Skills and character grow together.", tone: "violet" },
+            ]).map((item) => (
+              <article key={item.id || item.number} className={`landing-feature landing-feature-${item.tone} landing-reveal`}>
+                <span className="landing-feature-number">{item.number}</span>
+                <h3 className="font-semibold text-white">{item.title}</h3>
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-slate-400">{item.description}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
