@@ -13,14 +13,13 @@ import {
   MessageCircle,
   Phone,
   Quote,
-  ShieldCheck,
   Sparkles,
-  UsersRound,
 } from "lucide-react";
 import { connectToDatabase } from "@/lib/mongodb";
 import { SchoolConfiguration } from "@/Models";
 import LandingNav from "@/components/LandingNav";
 import PublicGallery from "@/components/PublicGallery";
+import PublicHighlights from "@/components/PublicHighlights";
 import PublicPageMotion from "@/components/PublicPageMotion";
 import PublicTestimonials from "@/components/PublicTestimonials";
 import ReadMoreText from "@/components/ReadMoreText";
@@ -125,7 +124,6 @@ export default async function Home() {
   const whatsappHref = /^https:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(whatsapp) ? whatsapp : "";
 
   const highlights = content.whyUs.filter((item) => item.title || item.description);
-  const highlightIcons = [BookOpen, UsersRound, ShieldCheck, GraduationCap, Sparkles];
   const hasAboutContent = Boolean(description || content.mission || content.vision);
 
   return (
@@ -255,27 +253,12 @@ export default async function Home() {
       ) : null}
 
       {highlights.length ? (
-        <section id="highlights" className="home-section home-highlights">
-          <div className="home-section-inner" data-reveal>
-            <div className="home-section-heading">
-              <div><p className="home-section-kicker">{copy.highlightsEyebrow}</p><h2>{copy.highlightsTitle}</h2></div>
-              <p>{copy.highlightsDescription}</p>
-            </div>
-            <div className="home-highlights-grid">
-              {highlights.map((item, index) => {
-                const Icon = highlightIcons[index % highlightIcons.length];
-                return (
-                  <article className="home-highlight-card" key={item.id || item.number || item.title}>
-                    <span className="home-highlight-icon"><Icon size={21} strokeWidth={1.7} aria-hidden="true" /></span>
-                    <span className="home-highlight-number">{item.number}</span>
-                    <h3>{item.title}</h3>
-                    {item.description ? <p>{item.description}</p> : null}
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <PublicHighlights
+          highlights={highlights}
+          eyebrow={copy.highlightsEyebrow}
+          title={copy.highlightsTitle}
+          description={copy.highlightsDescription}
+        />
       ) : null}
 
       {academicPrograms.length ? (
