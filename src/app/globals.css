@@ -2731,6 +2731,16 @@ body.landing-menu-open .home-floating-whatsapp {
   from { opacity: 0; transform: translateY(-0.4rem); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes home-whatsapp-pulse {
+  0%, 100% {
+    box-shadow: 0 12px 26px -16px rgb(15 23 42 / 0.48);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 0.45rem rgb(34 197 94 / 0.2), 0 12px 26px -16px rgb(15 23 42 / 0.48);
+    transform: scale(1.04);
+  }
+}
 @keyframes home-orbit-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-0.55rem); }
@@ -3661,9 +3671,11 @@ body.landing-menu-open .home-floating-whatsapp {
   line-height: 1.7;
 }
 .home-principal-name {
-  margin: 1.5rem 0 0;
+  margin: 1rem 0 0;
   color: #172033;
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
   font-weight: 750;
+  letter-spacing: -0.03em;
 }
 .home-principal-name span {
   display: block;
@@ -4307,11 +4319,12 @@ body.landing-menu-open .home-floating-whatsapp {
   animation: home-menu-in 160ms ease both;
 }
 .home-floating-whatsapp {
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  left: 1rem;
+  right: 1rem;
+  bottom: calc(5.2rem + env(safe-area-inset-bottom, 0px));
   border-color: #86efac;
   background: #16a34a;
   color: #fff;
+  animation: home-whatsapp-pulse 1.8s ease-in-out infinite;
 }
 .home-floating-whatsapp:hover {
   background: #15803d;
@@ -4417,7 +4430,9 @@ body.landing-menu-open .home-floating-whatsapp {
     order: 0;
   }
   .home-hero-visual {
+    align-self: start;
     order: 0;
+    margin-top: 2.1rem;
     padding: 0 0 2rem 0.5rem;
   }
   .home-hero-photo {
@@ -4554,6 +4569,7 @@ body.landing-menu-open .home-floating-whatsapp {
   }
   .landing-mobile-menu,
   .home-back-to-top,
+  .home-floating-whatsapp,
   .home-hero-title-panel,
   .public-rgb-card,
   .home-visual-orbit,

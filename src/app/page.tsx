@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { connectToDatabase } from "@/lib/mongodb";
 import { SchoolConfiguration } from "@/Models";
+import { whatsappContactLink } from "@/lib/voucher";
 import LandingNav from "@/components/LandingNav";
 import PublicGallery from "@/components/PublicGallery";
 import PublicHighlights from "@/components/PublicHighlights";
@@ -129,7 +130,7 @@ export default async function Home() {
     { label: "LinkedIn", href: text(social.linkedin), mark: "in" },
   ].filter((item) => item.href);
   const whatsapp = text(social.whatsapp);
-  const whatsappHref = /^https:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(whatsapp) ? whatsapp : "";
+  const whatsappHref = whatsappContactLink(whatsapp) || whatsappContactLink(phone);
 
   const highlights = content.whyUs.filter((item) => item.title || item.description);
   const hasAboutContent = Boolean(description || content.mission || content.vision);
@@ -313,8 +314,8 @@ export default async function Home() {
             ) : null}
             <div className="home-principal-message">
               <p className="home-section-kicker">{copy.principalEyebrow}</p>
+              {content.principalName ? <h2 className="home-principal-name">{content.principalName}<span>{copy.principalRole}</span></h2> : null}
               {principalMessage ? <blockquote><ReadMoreText text={principalMessage} className="home-principal-quote" previewLength={520} /></blockquote> : null}
-              {content.principalName ? <p className="home-principal-name">{content.principalName}<span>{copy.principalRole}</span></p> : null}
             </div>
           </div>
         </section>

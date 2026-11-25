@@ -125,7 +125,7 @@ export default function LedgerPanel({
       const response = await fetch("/api/finance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, type: entryType, amount: Number(form.amount) }),
+        body: JSON.stringify({ ...form, type: entryType, tab: type, amount: Number(form.amount) }),
       });
       const result = await response.json();
       if (!response.ok) {
@@ -147,7 +147,7 @@ const rows = data.entries;
   const hasFilters = Object.values(filters).some(Boolean);
   const field = "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5";
   function exportCsv() {
-    const params = new URLSearchParams({ type: entryType, format: "csv" });
+    const params = new URLSearchParams({ type: entryType, format: "csv", tab: type });
     for (const [key, value] of Object.entries(filters)) if (value) params.set(key, value);
     window.location.assign(`/api/finance?${params.toString()}`);
   }

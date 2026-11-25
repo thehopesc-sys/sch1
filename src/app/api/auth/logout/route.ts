@@ -1,4 +1,18 @@
 import { NextResponse } from "next/server";
+import { ADMIN_ACCESS_SCOPES, adminAccessCookieName } from "@/lib/admin-access";
+
+function clearAdminAccessCookies(response: NextResponse) {
+  for (const scope of ADMIN_ACCESS_SCOPES) {
+    response.cookies.set(adminAccessCookieName(scope), "", {
+      httpOnly: true,
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    });
+  }
+  response.cookies.set("finance_unlocked", "", { httpOnly: true, expires: new Date(0), path: "/" });
+  response.cookies.set("finance_unlocked", "", { httpOnly: true, expires: new Date(0), path: "/dashboard/finance" });
+}
 
 export async function POST() {
   const response = NextResponse.json({ success: true });
@@ -8,6 +22,7 @@ export async function POST() {
     sameSite: "lax",
     path: "/",
   });
+  clearAdminAccessCookies(response);
   return response;
 }
 
@@ -19,5 +34,6 @@ export async function GET(request: Request) {
     sameSite: "lax",
     path: "/",
   });
+  clearAdminAccessCookies(response);
   return response;
 }

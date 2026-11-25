@@ -93,7 +93,7 @@ export default async function AnalyticsPage({
 }) {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") redirect("/dashboard");
-  if (!await hasAdminAccess()) return <AdminAccessGate area="analytics" />;
+  if (!await hasAdminAccess("analytics:overview")) return <AdminAccessGate scope="analytics:overview" />;
   await connectToDatabase();
 
   const now = new Date();

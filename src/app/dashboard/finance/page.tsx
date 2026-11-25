@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { hasAdminAccess } from "@/lib/admin-access";
+import { FINANCE_ACCESS_SCOPES, hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { financeByCategory, financeTotals } from "@/lib/analytics";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/finance";
@@ -26,59 +26,69 @@ export default async function FinancePage({
 }) {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") redirect("/dashboard");
-  if (!await hasAdminAccess()) return <AdminAccessGate area="finance" />;
-  await connectToDatabase();
-
   // Deep links such as ?tab=expenses&month=March-2026 open that tab already
   // filtered, which is how the salary history links into the expenses list.
   const params = await searchParams;
-  const initialTab = (["overview", "income", "expenses", "salaries"] as const).includes(params.tab as never)
-    ? (params.tab as "overview" | "income" | "expenses" | "salaries")
-    : "overview";
+  const initialTab = (["overview", "income", "expenses", "salaries"] as const)
+    .find((tab) => tab === params.tab) ?? "overview";
+  const accessScope = FINANCE_ACCESS_SCOPES[initialTab];
+  if (!await hasAdminAccess(accessScope)) return <AdminAccessGate scope={accessScope} />;
   const initialMonth = /^\d{4}-\d{2}$/.test(params.month ?? "") ? params.month! : "";
 
-  const school = session.user.school ? String(session.user.school) : null;
-  const [entries, totals, categories, classSections] = await Promise.all([
-    FinanceEntry.find({ school }).sort({ date: -1, createdAt: -1 }).limit(20)
-      .populate("student", "fullName class section rollNumber")
-      .populate("teacher", "name subject")
-      .lean(),
-    financeTotals(),
-    Promise.all([financeByCategory("income"), financeByCategory("expense")]),
-    FinanceEntry.distinct("classSection", { school, classSection: { $nin: ["", null] } }),
-  ]);
-
-  const [incomeCategories, expenseCategories] = categories;
-  const initial: FinancePayload = {
-    entries: entries.map((entry) => ({
-      _id: String(entry._id),
-      type: entry.type,
-      category: entry.category,
-      title: entry.title,
-      note: entry.note ?? "",
-      amount: entry.amount,
-      date: new Date(entry.date).toISOString(),
-      source: entry.source,
-      classSection: entry.classSection ?? "",
-      student: entry.student
-        ? {
-            fullName: entry.student.fullName,
-            class: entry.student.class,
-            section: entry.student.section,
-            rollNumber: entry.student.rollNumber ?? "",
-          }
-        : null,
-      teacher: entry.teacher ? { name: entry.teacher.name, subject: entry.teacher.subject ?? "" } : null,
-    })),
-    summary: totals,
-    categories: [
-      ...incomeCategories.map((row) => ({ ...row, type: "income" as const })),
-      ...expenseCategories.map((row) => ({ ...row, type: "expense" as const })),
-    ],
-    classSections: classSections.map(String).filter(Boolean).sort(),
+  const emptyPayload: FinancePayload = {
+    entries: [],
+    summary: { income: 0, expense: 0, incomeCount: 0, expenseCount: 0, balance: 0 },
+    categories: [],
+    classSections: [],
     categoryOptions: { income: INCOME_CATEGORIES, expense: EXPENSE_CATEGORIES },
-    pagination: { page: 1, pages: 1, total: totals.incomeCount + totals.expenseCount, limit: 20 },
+    pagination: { page: 1, pages: 1, total: 0, limit: 20 },
   };
+  let initial = emptyPayload;
+  if (initialTab === "overview") {
+    await connectToDatabase();
+    const school = session.user.school ? String(session.user.school) : null;
+    const [entries, totals, categories, classSections] = await Promise.all([
+      FinanceEntry.find({ school }).sort({ date: -1, createdAt: -1 }).limit(20)
+        .populate("student", "fullName class section rollNumber")
+        .populate("teacher", "name subject")
+        .lean(),
+      financeTotals(),
+      Promise.all([financeByCategory("income"), financeByCategory("expense")]),
+      FinanceEntry.distinct("classSection", { school, classSection: { $nin: ["", null] } }),
+    ]);
+
+    const [incomeCategories, expenseCategories] = categories;
+    initial = {
+      entries: entries.map((entry) => ({
+        _id: String(entry._id),
+        type: entry.type,
+        category: entry.category,
+        title: entry.title,
+        note: entry.note ?? "",
+        amount: entry.amount,
+        date: new Date(entry.date).toISOString(),
+        source: entry.source,
+        classSection: entry.classSection ?? "",
+        student: entry.student
+          ? {
+              fullName: entry.student.fullName,
+              class: entry.student.class,
+              section: entry.student.section,
+              rollNumber: entry.student.rollNumber ?? "",
+            }
+          : null,
+        teacher: entry.teacher ? { name: entry.teacher.name, subject: entry.teacher.subject ?? "" } : null,
+      })),
+      summary: totals,
+      categories: [
+        ...incomeCategories.map((row) => ({ ...row, type: "income" as const })),
+        ...expenseCategories.map((row) => ({ ...row, type: "expense" as const })),
+      ],
+      classSections: classSections.map(String).filter(Boolean).sort(),
+      categoryOptions: { income: INCOME_CATEGORIES, expense: EXPENSE_CATEGORIES },
+      pagination: { page: 1, pages: 1, total: totals.incomeCount + totals.expenseCount, limit: 20 },
+    };
+  }
 
   return (
     <div className="app-page bg-slate-100 text-slate-900">
@@ -95,7 +105,7 @@ export default async function FinancePage({
           <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-white shadow-sm" />}>
             <FinanceWorkspace
               initial={initial}
-              overview={<FinanceOverview bucket={params.bucket ?? "daily"} />}
+              overview={initialTab === "overview" ? <FinanceOverview bucket={params.bucket ?? "daily"} /> : null}
               initialTab={initialTab}
               initialMonth={initialMonth}
             />

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { getCurrentUser } from "@/lib/auth";
+import { hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { cloudinaryConfigured, cloudinaryError, cloudinaryMissingVariables, deleteCloudinaryPhoto, uploadImage } from "@/lib/cloudinary";
 
@@ -28,6 +29,9 @@ export async function POST(request: Request) {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") {
     return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
+  }
+  if (!await hasAdminAccess("school-settings:landing")) {
+    return NextResponse.json({ error: "Landing page editor access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
   }
   try {
     await connectToDatabase();
@@ -79,6 +83,9 @@ export async function DELETE(request: Request) {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") {
     return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
+  }
+  if (!await hasAdminAccess("school-settings:landing")) {
+    return NextResponse.json({ error: "Landing page editor access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
   }
   try {
     const body = (await request.json().catch(() => ({}))) as { publicId?: unknown };

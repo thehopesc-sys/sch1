@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { getCurrentUser } from "@/lib/auth";
-import { hasAdminAccess } from "@/lib/admin-access";
+import { financeAccessScope, hasAdminAccess, type AdminAccessScope } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { FinanceEntry } from "@/Models";
 import { clampPage, countPages, parsePageNumber, parsePageSize } from "@/lib/pagination";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, isCategory, schoolIdFrom } from "@/lib/finance";
 import { monthNames, pruneFinanceIfDue } from "@/lib/retention";
 
-async function adminAccess() {
+async function adminAccess(scope: AdminAccessScope) {
   const session = await getCurrentUser();
   if (!session.authenticated || !session.user) return { error: "Unauthorized", status: 401 };
   if (session.user.role !== "admin") return { error: "Administrator access required", status: 403 };
-  if (!await hasAdminAccess()) return { error: "Finance access is locked", status: 423 };
+  if (!await hasAdminAccess(scope)) return { error: "Finance section is locked", status: 423 };
   return { user: session.user };
 }
 
@@ -33,7 +33,11 @@ function retentionCutoff() {
  * Filters: type, category, classSection, search, from, to, source, page, limit.
  */
 export async function GET(request: Request) {
-  const access = await adminAccess();
+  const params = new URL(request.url).searchParams;
+  const tab = params.get("tab") ?? "overview";
+  const accessScope = financeAccessScope(tab);
+  if (!accessScope) return NextResponse.json({ error: "A valid finance tab is required" }, { status: 400 });
+  const access = await adminAccess(accessScope);
   if ("error" in access) return NextResponse.json({ error: access.error }, { status: access.status });
   try {
     await connectToDatabase();
@@ -42,8 +46,12 @@ export async function GET(request: Request) {
     const school = schoolIdFrom(access.user);
     if (!school) return NextResponse.json({ error: "School configuration is missing for this account" }, { status: 400 });
 
-    const params = new URL(request.url).searchParams;
-    const type = params.get("type")?.trim() ?? "";
+    const requestedType = params.get("type")?.trim() ?? "";
+    const expectedType = tab === "income" ? "income" : tab === "expenses" ? "expense" : "";
+    if (expectedType && requestedType && requestedType !== expectedType) {
+      return NextResponse.json({ error: "This finance tab cannot access the requested record type" }, { status: 403 });
+    }
+    const type = expectedType || requestedType;
     const category = params.get("category")?.trim() ?? "";
     const classSection = params.get("classSection")?.trim().toUpperCase() ?? "";
     const source = params.get("source")?.trim() ?? "";
@@ -157,10 +165,20 @@ export async function GET(request: Request) {
 
 /** POST /api/finance — adds a manual income or expense row. */
 export async function POST(request: Request) {
-  const access = await adminAccess();
+  const body = await request.json().catch(() => null) as { type?: unknown; tab?: unknown; [key: string]: unknown } | null;
+  const scope = body?.tab === "income"
+    ? "finance:income"
+    : body?.tab === "expenses"
+      ? "finance:expenses"
+      : null;
+  if (!scope) return NextResponse.json({ error: "A valid finance tab is required" }, { status: 400 });
+  if ((body?.tab === "income" && body.type !== "income") || (body?.tab === "expenses" && body.type !== "expense")) {
+    return NextResponse.json({ error: "Record type must match the selected finance tab" }, { status: 400 });
+  }
+  const access = await adminAccess(scope);
   if ("error" in access) return NextResponse.json({ error: access.error }, { status: access.status });
   try {
-    const body = await request.json();
+    if (!body) return NextResponse.json({ error: "A valid JSON request body is required" }, { status: 400 });
     const type = String(body.type ?? "").trim();
     const category = String(body.category ?? "").trim();
     const title = String(body.title ?? "").trim();
@@ -216,17 +234,22 @@ export async function POST(request: Request) {
 
 /** DELETE /api/finance?id=… — removes one manual row. */
 export async function DELETE(request: Request) {
-  const access = await adminAccess();
+  const params = new URL(request.url).searchParams;
+  const tab = params.get("tab");
+  const scope = tab === "income" ? "finance:income" : tab === "expenses" ? "finance:expenses" : null;
+  if (!scope) return NextResponse.json({ error: "A valid finance tab is required" }, { status: 400 });
+  const type = tab === "income" ? "income" : "expense";
+  const access = await adminAccess(scope);
   if ("error" in access) return NextResponse.json({ error: access.error }, { status: access.status });
   try {
-    const id = new URL(request.url).searchParams.get("id")?.trim() ?? "";
+    const id = params.get("id")?.trim() ?? "";
     if (!mongoose.isValidObjectId(id)) return NextResponse.json({ error: "A valid record id is required" }, { status: 400 });
     await connectToDatabase();
     const school = schoolIdFrom(access.user);
     if (!school) return NextResponse.json({ error: "School configuration is missing for this account" }, { status: 400 });
     // Only manual rows are deletable here: an automatic row belongs to the fee
     // or salary it came from and is reversed there, so the two never diverge.
-    const deleted = await FinanceEntry.findOneAndDelete({ _id: id, school, source: "manual" });
+    const deleted = await FinanceEntry.findOneAndDelete({ _id: id, school, source: "manual", type });
     if (!deleted) {
       return NextResponse.json({ error: "Record not found, or it was created automatically" }, { status: 404 });
     }

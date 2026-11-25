@@ -67,11 +67,12 @@ const EMPTY_FILTERS: LedgerFilters = {
 };
 
 /** Builds a query string, dropping empty values so the URL stays readable. */
-function buildQuery(filters: LedgerFilters, page: number, limit: number) {
+function buildQuery(filters: LedgerFilters, page: number, limit: number, tab: "income" | "expenses") {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) if (value) params.set(key, value);
   if (page > 1) params.set("page", String(page));
   if (limit !== 20) params.set("limit", String(limit));
+  params.set("tab", tab);
   return params.toString();
 }
 
@@ -113,11 +114,11 @@ export default function FinanceWorkspace({
   }
 
   const load = useCallback(
-    async (nextPage: number) => {
+    async (nextPage: number, activeTab: "income" | "expenses") => {
       setLoading(true);
       setError("");
       try {
-        const response = await fetch(`/api/finance?${buildQuery(filters, nextPage, 20)}`);
+        const response = await fetch(`/api/finance?${buildQuery(filters, nextPage, 20, activeTab)}`);
         const result = await response.json();
         if (!response.ok) {
           setError(result.error ?? "Unable to load records");
@@ -136,7 +137,7 @@ export default function FinanceWorkspace({
   // The overview renders on the server, so it is deliberately not refetched.
   useEffect(() => {
     if (tab === "overview" || tab === "salaries") return;
-    void load(1);
+    void load(1, tab);
   }, [tab, load]);
 
   return (
@@ -184,8 +185,8 @@ export default function FinanceWorkspace({
               error={error}
               message={message}
               setMessage={setMessage}
-              onChanged={() => void load(1)}
-              onPage={(page) => void load(page)}
+              onChanged={() => void load(1, tab)}
+              onPage={(page) => void load(page, tab)}
               onOpenSalaries={() => selectTab("salaries")}
             />
           )}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { getCurrentUser } from "@/lib/auth";
-import { hasAdminAccess } from "@/lib/admin-access";
+import { feesAccessScope, hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { ClassSection, Fee, SchoolConfiguration, Student } from "@/Models";
 import { monthNames } from "@/lib/retention";
@@ -44,8 +44,16 @@ export async function GET(request: Request) {
   if (session.user.role !== "student" && session.user.role !== "admin") {
     return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
   }
-  if (session.user.role === "admin" && !await hasAdminAccess()) {
-    return NextResponse.json({ error: "Fees access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
+  const params = new URL(request.url).searchParams;
+  if (session.user.role === "admin") {
+    const scope = feesAccessScope(params.get("tab"));
+    if (!scope) return NextResponse.json({ error: "A valid fees tab is required" }, { status: 400 });
+    if (!await hasAdminAccess(scope)) {
+      return NextResponse.json({ error: "Fees section is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
+    }
+    if (scope !== "fees:overview") {
+      return NextResponse.json({ error: "Fee list data is only available from the fee overview tab" }, { status: 403 });
+    }
   }
   try {
     await connectToDatabase();
@@ -69,7 +77,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ fees });
     }
 
-    const params = new URL(request.url).searchParams;
     const rawSearch = params.get("search")?.trim() ?? "";
     const className = params.get("class")?.trim() ?? "";
     const section = params.get("section")?.trim() ?? "";
@@ -242,9 +249,12 @@ export async function POST(request: Request) {
   const session = await getCurrentUser();
   if (!session.authenticated || !session.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (session.user.role !== "admin") return NextResponse.json({ error: "Only administrators can manage fees" }, { status: 403 });
-  if (!await hasAdminAccess()) return NextResponse.json({ error: "Fees access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
+  const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+  if (!body) return NextResponse.json({ error: "A valid JSON request body is required" }, { status: 400 });
+  const scope = body.action === "discount" ? "fees:discounts" : "fees:overview";
+  if (!await hasAdminAccess(scope)) return NextResponse.json({ error: "Fees section is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
   try {
-    const body = await request.json(); await connectToDatabase();
+    await connectToDatabase();
     const month = String(body.month ?? ""); const year = Number(body.year); const studentId = String(body.studentId ?? ""); const action = String(body.action ?? "generate");
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     if (!months.includes(month) || !Number.isInteger(year)) return NextResponse.json({ error: "Month and year are required" }, { status: 400 });

@@ -232,3 +232,25 @@ export function whatsappVoucherLink(phone: string, message: string): string {
   return `https://wa.me/${normalizePhone(phone)}?text=${encodeURIComponent(message)}`;
 }
 
+/** A WhatsApp chat link from a phone number or an existing WhatsApp URL. */
+export function whatsappContactLink(contact: string): string {
+  const value = contact.trim();
+  if (!value) return "";
+
+  let phone = "";
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:") return "";
+
+    if (url.hostname.toLowerCase() === "wa.me") {
+      phone = normalizePhone(url.pathname.replace(/^\/+|\/+$/g, ""));
+    } else if (url.hostname.toLowerCase() === "api.whatsapp.com" && url.pathname === "/send") {
+      phone = normalizePhone(url.searchParams.get("phone") ?? "");
+    }
+  } catch {
+    phone = normalizePhone(value);
+  }
+
+  return phone ? `https://wa.me/${phone}` : "";
+}
+

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { getCurrentUser } from "@/lib/auth";
+import { hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { Teacher, TeacherSalary } from "@/Models";
 import { removeSalaryExpense, salaryTotals, schoolIdFrom, syncSalaryExpense } from "@/lib/finance";
@@ -10,6 +11,7 @@ async function adminAccess() {
   const session = await getCurrentUser();
   if (!session.authenticated || !session.user) return { error: "Unauthorized", status: 401 };
   if (session.user.role !== "admin") return { error: "Administrator access required", status: 403 };
+  if (!await hasAdminAccess("finance:salaries")) return { error: "Teacher salaries section is locked", status: 423 };
   return { user: session.user };
 }
 
