@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp, MessageCircle } from "lucide-react";
+import { ArrowUp, MessageCircle, Phone } from "lucide-react";
 
 export default function PublicPageMotion({ whatsappHref = "" }: { whatsappHref?: string }) {
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -68,7 +68,10 @@ export default function PublicPageMotion({ whatsappHref = "" }: { whatsappHref?:
           rel="noreferrer"
           aria-label="Message the school on WhatsApp"
         >
-          <MessageCircle size={21} aria-hidden="true" />
+          <span className="relative grid h-6 w-6 place-items-center" aria-hidden="true">
+            <MessageCircle size={24} strokeWidth={2} />
+            <Phone size={10} strokeWidth={2.5} className="absolute" />
+          </span>
         </a>
       ) : null}
     </>

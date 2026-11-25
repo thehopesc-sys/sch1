@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
 type ScanResult = {
   success?: boolean;
@@ -22,7 +23,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export default function AttendanceQrScanner() {
-  const scannerRef = useRef<import("html5-qrcode").Html5Qrcode | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const processingRef = useRef(false);
   const lastScannedRef = useRef({ token: "", at: 0 });
   const scanQueueRef = useRef<QueuedScan[]>([]);
@@ -97,7 +98,7 @@ export default function AttendanceQrScanner() {
     if (name === "SecureContextRequired") return "Camera access requires HTTPS or localhost. You can still scan with a USB QR reader.";
     if (name === "MediaDevicesUnavailable") return "This browser does not provide camera access. Use a supported browser or a USB QR reader.";
     if (name === "NotAllowedError" || name === "PermissionDeniedError" || name === "SecurityError" || /permission denied|access denied/i.test(detail)) {
-      return "Camera permission was denied. Allow camera access for this site in your browser settings, then try again.";
+      return "The browser blocked camera access. Open this site’s permissions from the camera or lock icon beside the address bar, set Camera to Allow, reload this page, then try again. If prompted, choose Allow.";
     }
     if (name === "NoCameraAvailable" || name === "NotFoundError" || name === "DevicesNotFoundError" || name === "OverconstrainedError") {
       return "No usable camera was found. Try the built-in laptop or mobile camera, or use a USB QR reader.";
@@ -108,7 +109,7 @@ export default function AttendanceQrScanner() {
     return "Could not start the camera. Check camera permission and use HTTPS or localhost; a USB QR reader is also supported.";
   }
 
-  const clearScanner = useCallback(async (scanner: import("html5-qrcode").Html5Qrcode) => {
+  const clearScanner = useCallback(async (scanner: Html5Qrcode) => {
     let cleanupError: unknown;
     try {
       if (scanner.isScanning) await scanner.stop();
@@ -131,7 +132,7 @@ export default function AttendanceQrScanner() {
     setCameraStarting(true);
     setError("");
     setMessage("");
-    let scanner: import("html5-qrcode").Html5Qrcode | null = null;
+    let scanner: Html5Qrcode | null = null;
     try {
       if (!window.isSecureContext) {
         const secureContextError = new Error("Camera access requires HTTPS or localhost.");
@@ -143,7 +144,6 @@ export default function AttendanceQrScanner() {
         unavailableError.name = "MediaDevicesUnavailable";
         throw unavailableError;
       }
-      const { Html5Qrcode, Html5QrcodeSupportedFormats } = await import("html5-qrcode");
       scanner = new Html5Qrcode("attendance-qr-reader", {
         formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
         verbose: false,
