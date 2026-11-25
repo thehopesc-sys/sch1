@@ -38,6 +38,15 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    label: "Fees",
+    href: "/dashboard/fees",
+    quick: true,
+    children: [
+      { label: "Fee overview", href: "/dashboard/fees", exact: true },
+      { label: "Student fee discounts", href: "/dashboard/fees?tab=discounts" },
+    ],
+  },
+  {
     label: "Exams",
     href: "/dashboard/exams",
     children: [
@@ -86,15 +95,6 @@ const navigation: NavItem[] = [
       { label: "All classes", href: "/dashboard/classes", exact: true },
       { label: "Add class", href: "/dashboard/classes/new", exact: true },
       { label: "Assign class to teacher", href: "/dashboard/teachers/assign", exact: true },
-    ],
-  },
-  {
-    label: "Fees",
-    href: "/dashboard/fees",
-    quick: true,
-    children: [
-      { label: "Fee overview", href: "/dashboard/fees", exact: true },
-      { label: "Student fee discounts", href: "/dashboard/fees?tab=discounts" },
     ],
   },
   { label: "Notices", href: "/dashboard/notices", children: [

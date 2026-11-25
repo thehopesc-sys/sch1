@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { getCurrentUser } from "@/lib/auth";
+import { hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { ClassSection, Fee, SchoolConfiguration, Student } from "@/Models";
 import { monthNames } from "@/lib/retention";
@@ -40,6 +41,12 @@ function scopeQuery(className: string, section: string, rawSearch: string) {
 export async function GET(request: Request) {
   const session = await getCurrentUser();
   if (!session.authenticated || !session.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.user.role !== "student" && session.user.role !== "admin") {
+    return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
+  }
+  if (session.user.role === "admin" && !await hasAdminAccess()) {
+    return NextResponse.json({ error: "Fees access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
+  }
   try {
     await connectToDatabase();
 
@@ -61,8 +68,6 @@ export async function GET(request: Request) {
         : [];
       return NextResponse.json({ fees });
     }
-
-    if (session.user.role !== "admin") return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
 
     const params = new URL(request.url).searchParams;
     const rawSearch = params.get("search")?.trim() ?? "";
@@ -237,6 +242,7 @@ export async function POST(request: Request) {
   const session = await getCurrentUser();
   if (!session.authenticated || !session.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (session.user.role !== "admin") return NextResponse.json({ error: "Only administrators can manage fees" }, { status: 403 });
+  if (!await hasAdminAccess()) return NextResponse.json({ error: "Fees access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
   try {
     const body = await request.json(); await connectToDatabase();
     const month = String(body.month ?? ""); const year = Number(body.year); const studentId = String(body.studentId ?? ""); const action = String(body.action ?? "generate");

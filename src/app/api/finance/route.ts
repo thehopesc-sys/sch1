@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import mongoose from "mongoose";
 import { getCurrentUser } from "@/lib/auth";
+import { hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { FinanceEntry } from "@/Models";
 import { clampPage, countPages, parsePageNumber, parsePageSize } from "@/lib/pagination";
@@ -12,7 +12,7 @@ async function adminAccess() {
   const session = await getCurrentUser();
   if (!session.authenticated || !session.user) return { error: "Unauthorized", status: 401 };
   if (session.user.role !== "admin") return { error: "Administrator access required", status: 403 };
-  if ((await cookies()).get("finance_unlocked")?.value !== "1") return { error: "Finance access is locked", status: 423 };
+  if (!await hasAdminAccess()) return { error: "Finance access is locked", status: 423 };
   return { user: session.user };
 }
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { hasAdminAccess } from "@/lib/admin-access";
+import AdminAccessGate from "@/components/AdminAccessGate";
 import { connectToDatabase } from "@/lib/mongodb";
 import {
   TREND_RANGES,
@@ -91,6 +93,7 @@ export default async function AnalyticsPage({
 }) {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") redirect("/dashboard");
+  if (!await hasAdminAccess()) return <AdminAccessGate area="analytics" />;
   await connectToDatabase();
 
   const now = new Date();

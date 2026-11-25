@@ -3,11 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function FinanceGate() {
+const AREA_LABELS = {
+  finance: "finance",
+  analytics: "analytics",
+  fees: "fees",
+  "school settings": "school settings",
+} as const;
+
+export type ProtectedAdminArea = keyof typeof AREA_LABELS;
+
+export default function AdminAccessGate({ area }: { area: ProtectedAdminArea }) {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const areaLabel = AREA_LABELS[area];
 
   async function unlock(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -21,7 +31,7 @@ export default function FinanceGate() {
       });
       const result = await response.json();
       if (!response.ok) {
-        setError(result.error ?? "Unable to unlock finance");
+        setError(result.error ?? `Unable to unlock ${areaLabel}`);
         return;
       }
       router.refresh();
@@ -42,11 +52,11 @@ export default function FinanceGate() {
           </svg>
         </div>
         <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">Protected area</p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight">Unlock finance</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">Enter the finance access password to view income, expenses, salaries, and financial reports.</p>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight">Unlock {areaLabel}</h1>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Enter the shared admin access password to continue to {areaLabel}.</p>
         <form onSubmit={unlock} className="mt-6 text-left">
           <label className="text-sm font-semibold text-slate-700">
-            Finance password
+            Admin access password
             <input
               required
               autoFocus
@@ -59,10 +69,10 @@ export default function FinanceGate() {
           </label>
           {error ? <p role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2.5 text-sm text-red-700">{error}</p> : null}
           <button type="submit" disabled={loading} className="mt-5 w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60">
-            {loading ? "Checking…" : "Open finance"}
+            {loading ? "Checking…" : `Open ${areaLabel}`}
           </button>
         </form>
-        <p className="mt-4 text-xs text-slate-400">The finance unlock expires automatically after 30 minutes.</p>
+        <p className="mt-4 text-xs text-slate-400">Access expires automatically after 30 minutes.</p>
       </section>
     </main>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { hasAdminAccess } from "@/lib/admin-access";
 import { connectToDatabase } from "@/lib/mongodb";
 import { SchoolConfiguration, User } from "@/Models";
 import { signedR2Url } from "@/lib/object-storage";
@@ -20,6 +21,7 @@ async function withSignedImages<T extends Record<string, unknown> | null>(school
 export async function GET() {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
+  if (!await hasAdminAccess()) return NextResponse.json({ error: "School settings access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
   await connectToDatabase();
   const school = await SchoolConfiguration.findById(session.user.school).lean();
   const administrator = await User.findById(session.user.id).select("name email cnic role").lean();
@@ -29,6 +31,7 @@ export async function GET() {
 export async function PATCH(request: Request) {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") return NextResponse.json({ error: "Administrator access required" }, { status: 403 });
+  if (!await hasAdminAccess()) return NextResponse.json({ error: "School settings access is locked", code: "ADMIN_ACCESS_LOCKED" }, { status: 423 });
   try {
     await connectToDatabase();
     const school = await SchoolConfiguration.findById(session.user.school);
