@@ -16,7 +16,7 @@ import { cloudinaryConfigured, cloudinaryError, cloudinaryMissingVariables, dele
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 // Where a picture is used decides how large it is kept on Cloudinary.
-const KINDS = new Set(["cover", "logo", "principal", "topStudent", "news", "gallery"]);
+const KINDS = new Set(["cover", "logo", "principal", "topStudent", "news", "gallery", "program", "facility", "event"]);
 
 function maxDimensionFor(kind: string) {
   if (kind === "logo") return 1024;

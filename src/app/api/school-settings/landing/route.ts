@@ -3,7 +3,13 @@ import { getCurrentUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import { SchoolConfiguration } from "@/Models";
 import { deleteCloudinaryPhoto } from "@/lib/cloudinary";
-import { readLanding, type LandingContent } from "@/lib/landing";
+import {
+  DEFAULT_HOMEPAGE_COPY,
+  readHomepageCopy,
+  readLanding,
+  type HomepageCopy,
+  type LandingContent,
+} from "@/lib/landing";
 
 /**
  * Landing-page content for the signed-in admin's school.
@@ -21,10 +27,18 @@ import { readLanding, type LandingContent } from "@/lib/landing";
 const MAX_STUDENTS = 24;
 const MAX_NEWS = 24;
 const MAX_GALLERY = 40;
+const MAX_PROGRAMS = 12;
+const MAX_FACILITIES = 16;
+const MAX_EVENTS = 24;
+const MAX_TESTIMONIALS = 12;
+const MAX_ADMISSION_STEPS = 8;
+const MAX_ADMISSION_REQUIREMENTS = 16;
+const MAX_RECOGNITIONS = 12;
 const MAX_SHORT = 160;
 const MAX_MEDIUM = 600;
 const MAX_LONG = 4000;
 const MAX_WHY_US = 8;
+const MAX_HOMEPAGE_COPY = 600;
 
 /** Trims a value to a string, capped at `max` characters. */
 function clean(value: unknown, max: number): string {
@@ -49,6 +63,12 @@ function toDate(value: unknown): Date {
   return new Date();
 }
 
+function nullableDate(value: unknown): Date | null {
+  if (typeof value !== "string" || !value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
 export async function GET() {
   const session = await getCurrentUser();
   if (!session.authenticated || session.user?.role !== "admin") {
@@ -71,8 +91,21 @@ export async function PATCH(request: Request) {
     if (!existing) return NextResponse.json({ error: "School configuration not found" }, { status: 404 });
     const body = (await request.json().catch(() => null)) as Partial<LandingContent> | null;
     if (!body || typeof body !== "object") return NextResponse.json({ error: "A JSON request body is required" }, { status: 400 });
+    if (body.homepageCopy !== undefined && (!body.homepageCopy || typeof body.homepageCopy !== "object" || Array.isArray(body.homepageCopy))) {
+      return NextResponse.json({ error: "Homepage copy must be an object" }, { status: 400 });
+    }
+    const rawHomepageCopy = readHomepageCopy(body.homepageCopy);
+    const homepageCopy = {} as HomepageCopy;
+    for (const key of Object.keys(DEFAULT_HOMEPAGE_COPY) as (keyof HomepageCopy)[]) {
+      homepageCopy[key] = clean(rawHomepageCopy[key], MAX_HOMEPAGE_COPY) || DEFAULT_HOMEPAGE_COPY[key];
+    }
 
     const fields: { label: string; value: unknown; max: number }[] = [
+      ...Object.entries(rawHomepageCopy).map(([label, value]) => ({
+        label: `Homepage copy: ${label}`,
+        value,
+        max: MAX_HOMEPAGE_COPY,
+      })),
       { label: "Tagline", value: body.tagline, max: MAX_SHORT },
       { label: "Mission", value: body.mission, max: MAX_LONG },
       { label: "Vision", value: body.vision, max: MAX_LONG },
@@ -111,6 +144,7 @@ export async function PATCH(request: Request) {
           { label: `Gallery ${index + 1} image URL`, value: item.image, max: MAX_MEDIUM },
           { label: `Gallery ${index + 1} image ID`, value: item.imagePublicId, max: MAX_MEDIUM },
           { label: `Gallery ${index + 1} caption`, value: item.caption, max: MAX_SHORT },
+          { label: `Gallery ${index + 1} category`, value: item.category, max: MAX_SHORT },
         ];
       }),
       ...asList(body.whyUs, MAX_WHY_US).flatMap((entry, index) => {
@@ -119,6 +153,65 @@ export async function PATCH(request: Request) {
           { label: `Why us ${index + 1} number`, value: item.number, max: 8 },
           { label: `Why us ${index + 1} title`, value: item.title, max: MAX_SHORT },
           { label: `Why us ${index + 1} description`, value: item.description, max: MAX_MEDIUM },
+        ];
+      }),
+      ...asList(body.academicPrograms, MAX_PROGRAMS).flatMap((entry, index) => {
+        const item = (entry ?? {}) as Record<string, unknown>;
+        return [
+          { label: `Academic program ${index + 1} title`, value: item.title, max: MAX_SHORT },
+          { label: `Academic program ${index + 1} grade range`, value: item.gradeRange, max: MAX_SHORT },
+          { label: `Academic program ${index + 1} description`, value: item.description, max: MAX_MEDIUM },
+          { label: `Academic program ${index + 1} image URL`, value: item.image, max: MAX_MEDIUM },
+          { label: `Academic program ${index + 1} image ID`, value: item.imagePublicId, max: MAX_MEDIUM },
+        ];
+      }),
+      ...asList(body.facilities, MAX_FACILITIES).flatMap((entry, index) => {
+        const item = (entry ?? {}) as Record<string, unknown>;
+        return [
+          { label: `Facility ${index + 1} title`, value: item.title, max: MAX_SHORT },
+          { label: `Facility ${index + 1} description`, value: item.description, max: MAX_MEDIUM },
+          { label: `Facility ${index + 1} image URL`, value: item.image, max: MAX_MEDIUM },
+          { label: `Facility ${index + 1} image ID`, value: item.imagePublicId, max: MAX_MEDIUM },
+        ];
+      }),
+      ...asList(body.upcomingEvents, MAX_EVENTS).flatMap((entry, index) => {
+        const item = (entry ?? {}) as Record<string, unknown>;
+        return [
+          { label: `Event ${index + 1} title`, value: item.title, max: MAX_SHORT },
+          { label: `Event ${index + 1} date`, value: item.date, max: MAX_SHORT },
+          { label: `Event ${index + 1} time`, value: item.time, max: MAX_SHORT },
+          { label: `Event ${index + 1} location`, value: item.location, max: MAX_SHORT },
+          { label: `Event ${index + 1} description`, value: item.description, max: MAX_MEDIUM },
+          { label: `Event ${index + 1} image URL`, value: item.image, max: MAX_MEDIUM },
+          { label: `Event ${index + 1} image ID`, value: item.imagePublicId, max: MAX_MEDIUM },
+        ];
+      }),
+      ...asList(body.testimonials, MAX_TESTIMONIALS).flatMap((entry, index) => {
+        const item = (entry ?? {}) as Record<string, unknown>;
+        return [
+          { label: `Testimonial ${index + 1} name`, value: item.name, max: MAX_SHORT },
+          { label: `Testimonial ${index + 1} role`, value: item.role, max: MAX_SHORT },
+          { label: `Testimonial ${index + 1} message`, value: item.message, max: MAX_MEDIUM },
+        ];
+      }),
+      ...asList(body.admissionSteps, MAX_ADMISSION_STEPS).flatMap((entry, index) => {
+        const item = (entry ?? {}) as Record<string, unknown>;
+        return [
+          { label: `Admission step ${index + 1} title`, value: item.title, max: MAX_SHORT },
+          { label: `Admission step ${index + 1} description`, value: item.description, max: MAX_MEDIUM },
+        ];
+      }),
+      ...asList(body.admissionRequirements, MAX_ADMISSION_REQUIREMENTS).map((value, index) => ({
+        label: `Admission requirement ${index + 1}`,
+        value,
+        max: MAX_SHORT,
+      })),
+      ...asList(body.recognitions, MAX_RECOGNITIONS).flatMap((entry, index) => {
+        const item = (entry ?? {}) as Record<string, unknown>;
+        return [
+          { label: `Recognition ${index + 1} title`, value: item.title, max: MAX_SHORT },
+          { label: `Recognition ${index + 1} issuer`, value: item.issuer, max: MAX_SHORT },
+          { label: `Recognition ${index + 1} year`, value: item.year, max: MAX_SHORT },
         ];
       }),
     ];
@@ -158,6 +251,7 @@ export async function PATCH(request: Request) {
         image: clean(item.image, MAX_MEDIUM),
         imagePublicId: clean(item.imagePublicId, MAX_MEDIUM),
         caption: preserved(item.caption),
+        category: clean(item.category, MAX_SHORT),
       };
     });
     const whyUs = asList(body.whyUs, MAX_WHY_US).map((entry, index) => {
@@ -167,6 +261,63 @@ export async function PATCH(request: Request) {
         title: clean(item.title, MAX_SHORT),
         description: preserved(item.description),
         tone: ["blue", "emerald", "violet", "amber"].includes(String(item.tone)) ? String(item.tone) : "blue",
+      };
+    });
+    const academicPrograms = asList(body.academicPrograms, MAX_PROGRAMS).map((entry) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        title: clean(item.title, MAX_SHORT),
+        gradeRange: clean(item.gradeRange, MAX_SHORT),
+        description: preserved(item.description),
+        image: clean(item.image, MAX_MEDIUM),
+        imagePublicId: clean(item.imagePublicId, MAX_MEDIUM),
+      };
+    });
+    const facilities = asList(body.facilities, MAX_FACILITIES).map((entry) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        title: clean(item.title, MAX_SHORT),
+        description: preserved(item.description),
+        image: clean(item.image, MAX_MEDIUM),
+        imagePublicId: clean(item.imagePublicId, MAX_MEDIUM),
+      };
+    });
+    const upcomingEvents = asList(body.upcomingEvents, MAX_EVENTS).map((entry) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        title: clean(item.title, MAX_SHORT),
+        date: nullableDate(item.date),
+        time: clean(item.time, MAX_SHORT),
+        location: clean(item.location, MAX_SHORT),
+        description: preserved(item.description),
+        image: clean(item.image, MAX_MEDIUM),
+        imagePublicId: clean(item.imagePublicId, MAX_MEDIUM),
+        published: item.published === true,
+      };
+    });
+    const testimonials = asList(body.testimonials, MAX_TESTIMONIALS).map((entry) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        name: clean(item.name, MAX_SHORT),
+        role: clean(item.role, MAX_SHORT),
+        message: preserved(item.message),
+        published: item.published === true,
+      };
+    });
+    const admissionSteps = asList(body.admissionSteps, MAX_ADMISSION_STEPS).map((entry) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        title: clean(item.title, MAX_SHORT),
+        description: preserved(item.description),
+      };
+    });
+    const admissionRequirements = asList(body.admissionRequirements, MAX_ADMISSION_REQUIREMENTS).map((value) => clean(value, MAX_SHORT));
+    const recognitions = asList(body.recognitions, MAX_RECOGNITIONS).map((entry) => {
+      const item = (entry ?? {}) as Record<string, unknown>;
+      return {
+        title: clean(item.title, MAX_SHORT),
+        issuer: clean(item.issuer, MAX_SHORT),
+        year: clean(item.year, MAX_SHORT),
       };
     });
 
@@ -186,6 +337,14 @@ export async function PATCH(request: Request) {
       newsPosts,
       gallery,
       whyUs,
+      academicPrograms,
+      facilities,
+      upcomingEvents,
+      testimonials,
+      admissionSteps,
+      admissionRequirements,
+      recognitions,
+      homepageCopy,
     };
 
     const previous = readLanding(existing);
@@ -216,5 +375,8 @@ function collectPublicIds(content: LandingContent): string[] {
     ...content.topStudents.map((student) => student.photoPublicId),
     ...content.newsPosts.map((post) => post.imagePublicId),
     ...content.gallery.map((item) => item.imagePublicId),
+    ...content.academicPrograms.map((item) => item.imagePublicId),
+    ...content.facilities.map((item) => item.imagePublicId),
+    ...content.upcomingEvents.map((item) => item.imagePublicId),
   ].filter(Boolean);
 }

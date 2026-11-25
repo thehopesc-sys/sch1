@@ -1,6 +1,7 @@
 "use strict";
 
 import mongoose from "mongoose";
+import { DEFAULT_HOMEPAGE_COPY } from "@/lib/landing";
 
 const { Schema } = mongoose;
 
@@ -36,6 +37,7 @@ const galleryImageSchema = new Schema({
   image: { type: String, default: "" },
   imagePublicId: { type: String, default: "" },
   caption: { type: String, default: "" },
+  category: { type: String, trim: true, default: "" },
 });
 
 const whyUsSchema = new Schema({
@@ -44,6 +46,57 @@ const whyUsSchema = new Schema({
   description: { type: String, default: "" },
   tone: { type: String, trim: true, default: "blue" },
 });
+
+const academicProgramSchema = new Schema({
+  title: { type: String, trim: true, default: "" },
+  gradeRange: { type: String, trim: true, default: "" },
+  description: { type: String, default: "" },
+  image: { type: String, default: "" },
+  imagePublicId: { type: String, default: "" },
+});
+
+const facilitySchema = new Schema({
+  title: { type: String, trim: true, default: "" },
+  description: { type: String, default: "" },
+  image: { type: String, default: "" },
+  imagePublicId: { type: String, default: "" },
+});
+
+const schoolEventSchema = new Schema({
+  title: { type: String, trim: true, default: "" },
+  date: { type: Date, default: null },
+  time: { type: String, trim: true, default: "" },
+  location: { type: String, trim: true, default: "" },
+  description: { type: String, default: "" },
+  image: { type: String, default: "" },
+  imagePublicId: { type: String, default: "" },
+  published: { type: Boolean, default: false },
+});
+
+const testimonialSchema = new Schema({
+  name: { type: String, trim: true, default: "" },
+  role: { type: String, trim: true, default: "" },
+  message: { type: String, default: "" },
+  published: { type: Boolean, default: false },
+});
+
+const admissionStepSchema = new Schema({
+  title: { type: String, trim: true, default: "" },
+  description: { type: String, default: "" },
+});
+
+const recognitionSchema = new Schema({
+  title: { type: String, trim: true, default: "" },
+  issuer: { type: String, trim: true, default: "" },
+  year: { type: String, trim: true, default: "" },
+});
+
+const homepageCopySchema = new Schema(
+  Object.fromEntries(
+    Object.keys(DEFAULT_HOMEPAGE_COPY).map((key) => [key, { type: String, default: "" }]),
+  ),
+  { _id: false },
+);
 
 // ==========================================
 // School Configuration Schema
@@ -115,6 +168,10 @@ const schoolConfigurationSchema = new Schema({
   favicon: {
     type: String,
     default: "/favicon.ico",
+  },
+  homepageCopy: {
+    type: homepageCopySchema,
+    default: () => ({}),
   },
   logo: {
     type: String,
@@ -189,6 +246,34 @@ const schoolConfigurationSchema = new Schema({
   },
   whyUs: {
     type: [whyUsSchema],
+    default: [],
+  },
+  academicPrograms: {
+    type: [academicProgramSchema],
+    default: [],
+  },
+  facilities: {
+    type: [facilitySchema],
+    default: [],
+  },
+  upcomingEvents: {
+    type: [schoolEventSchema],
+    default: [],
+  },
+  testimonials: {
+    type: [testimonialSchema],
+    default: [],
+  },
+  admissionSteps: {
+    type: [admissionStepSchema],
+    default: [],
+  },
+  admissionRequirements: {
+    type: [{ type: String, trim: true }],
+    default: [],
+  },
+  recognitions: {
+    type: [recognitionSchema],
     default: [],
   },
 }, { timestamps: true });

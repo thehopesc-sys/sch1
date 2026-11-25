@@ -13,7 +13,7 @@ import { useState, type ChangeEvent } from "react";
  * server-side the next time the content is saved.
  */
 
-type Kind = "cover" | "logo" | "principal" | "topStudent" | "news" | "gallery";
+type Kind = "cover" | "logo" | "principal" | "topStudent" | "news" | "gallery" | "program" | "facility" | "event";
 const recommendedDimensions: Record<Kind, string> = {
   cover: "1600 × 900 px or larger (landscape)",
   logo: "1024 × 1024 px or larger (square)",
@@ -21,6 +21,9 @@ const recommendedDimensions: Record<Kind, string> = {
   topStudent: "800 × 800 px (square)",
   news: "1200 × 800 px (landscape)",
   gallery: "1200 × 800 px (landscape)",
+  program: "1200 × 800 px (landscape)",
+  facility: "1200 × 800 px (landscape)",
+  event: "1200 × 800 px (landscape)",
 };
 
 type Props = {
