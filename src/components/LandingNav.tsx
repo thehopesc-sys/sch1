@@ -16,6 +16,7 @@ type Props = {
   hasEvents?: boolean;
   hasFacilities?: boolean;
   hasGallery?: boolean;
+  showSignIn?: boolean;
 };
 
 export default function LandingNav({
@@ -28,6 +29,7 @@ export default function LandingNav({
   hasEvents = false,
   hasFacilities = false,
   hasGallery = false,
+  showSignIn = true,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -108,9 +110,11 @@ export default function LandingNav({
           {links.map((item) => (
             <Link key={item.label} href={item.href} className="landing-nav-link whitespace-nowrap rounded-lg px-3 py-2 text-[0.82rem] font-medium">{item.label}</Link>
           ))}
-          <Link href="/login" className="landing-nav-link inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-[0.82rem] font-semibold">
-            <LogIn size={15} aria-hidden="true" /> {copy.footerLogin}
-          </Link>
+          {showSignIn ? (
+            <Link href="/login" className="landing-nav-link inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-[0.82rem] font-semibold">
+              <LogIn size={15} aria-hidden="true" /> {copy.footerLogin}
+            </Link>
+          ) : null}
           <Link href="/contact#admissions" className="landing-nav-cta ml-2 inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold">
             {copy.navAdmissionAction} <ArrowRight size={15} aria-hidden="true" />
           </Link>
@@ -141,9 +145,11 @@ export default function LandingNav({
               <Link href="/contact#admissions" onClick={() => setOpen(false)} className="landing-mobile-signin mt-3 flex items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-center text-sm font-semibold whitespace-nowrap">
                 {copy.navAdmissionAction} <ArrowRight size={16} aria-hidden="true" />
               </Link>
-              <Link href="/login" onClick={() => setOpen(false)} className="landing-mobile-login mt-2 flex items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-center text-sm font-semibold whitespace-nowrap">
-                <LogIn size={16} aria-hidden="true" /> {copy.footerLogin}
-              </Link>
+              {showSignIn ? (
+                <Link href="/login" onClick={() => setOpen(false)} className="landing-mobile-login mt-2 flex items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-center text-sm font-semibold whitespace-nowrap">
+                  <LogIn size={16} aria-hidden="true" /> {copy.footerLogin}
+                </Link>
+              ) : null}
             </nav>
           </div>
         </div>

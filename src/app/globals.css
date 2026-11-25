@@ -1421,88 +1421,18 @@ main .shadow-sm {
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
-  padding: 1rem clamp(1rem, 4vw, 3.5rem) 2rem;
+  padding: 0 0 2rem;
   background:
     radial-gradient(ellipse at 12% 0%, rgb(37 99 235 / 0.22), transparent 34%),
     radial-gradient(ellipse at 92% 84%, rgb(14 165 233 / 0.12), transparent 32%),
     #07111f;
   color: #e2e8f0;
 }
-.signin-topbar {
-  width: min(100%, 76rem);
-  margin: 0 auto clamp(1.5rem, 4vh, 3rem);
-  padding-block: 0.35rem;
-}
-.signin-topbar-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-.signin-brand {
-  min-width: 0;
-  color: #f8fafc;
-  text-decoration: none;
-}
-.signin-top-links {
-  display: none;
-  align-items: center;
-  gap: 0.35rem;
-}
-.signin-top-links a {
-  border-radius: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  color: #cbd5e1;
-  font-size: 0.86rem;
-  font-weight: 550;
-  text-decoration: none;
-  transition: color 160ms ease, background-color 160ms ease;
-}
-.signin-top-links a:hover {
-  background: rgb(255 255 255 / 0.08);
-  color: #fff;
-}
-.signin-menu-toggle {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid rgb(255 255 255 / 0.16);
-  border-radius: 0.9rem;
-  color: #f8fafc;
-}
-.signin-mobile-menu {
-  position: absolute;
-  z-index: 40;
-  inset-inline: 0;
-  top: calc(100% + 0.5rem);
-  display: grid;
-  gap: 0.2rem;
-  border: 1px solid rgb(255 255 255 / 0.14);
-  border-radius: 1rem;
-  padding: 0.5rem;
-  background: rgb(15 23 42 / 0.98);
-  box-shadow: 0 20px 50px rgb(0 0 0 / 0.35);
-  backdrop-filter: blur(18px);
-}
-.signin-mobile-menu a {
-  border-radius: 0.7rem;
-  padding: 0.8rem 0.9rem;
-  color: #e2e8f0;
-  font-size: 0.9rem;
-  font-weight: 550;
-  text-decoration: none;
-}
-.signin-mobile-menu a:hover {
-  background: rgb(255 255 255 / 0.08);
-  color: #fff;
-}
 .signin-layout {
   position: relative;
   isolation: isolate;
   display: grid;
-  width: min(100%, 76rem);
+  width: min(calc(100% - 2rem), 76rem);
   min-width: 0;
   margin: auto;
   overflow: hidden;
@@ -1832,13 +1762,93 @@ main .shadow-sm {
   outline: 3px solid #38bdf8;
   outline-offset: 3px;
 }
-@media (min-width: 640px) {
-  .signin-top-links {
-    display: flex;
-  }
-  .signin-menu-toggle {
-    display: none;
-  }
+
+html[data-theme="midnight"] .signin-form-panel {
+  background: linear-gradient(160deg, #121d2e 0%, #0e1726 100%);
+  color: #f1f5f9;
+}
+html[data-theme="midnight"] .signin-form-mark {
+  border-color: #385273;
+  background: #192b42;
+  color: #93c5fd;
+  box-shadow: none;
+}
+html[data-theme="midnight"] .signin-eyebrow {
+  color: #93c5fd;
+}
+html[data-theme="midnight"] .signin-form-content h2 {
+  color: #f8fafc;
+}
+html[data-theme="midnight"] .signin-intro,
+html[data-theme="midnight"] .signin-security-note {
+  color: #c0ccdc;
+}
+html[data-theme="midnight"] .signin-back-link {
+  color: #cbd5e1;
+}
+html[data-theme="midnight"] .signin-back-link:hover {
+  background: #1b2b40;
+  color: #bfdbfe;
+}
+html[data-theme="midnight"] .signin-role {
+  border-color: #34445a;
+  background: #172235;
+  color: #b7c5d8;
+}
+html[data-theme="midnight"] .signin-role:hover {
+  border-color: #52739b;
+}
+html[data-theme="midnight"] .signin-role.is-selected {
+  border-color: #60a5fa;
+  background: #1b3555;
+  color: #bfdbfe;
+  box-shadow: 0 0 0 1px rgb(96 165 250 / 0.16);
+}
+html[data-theme="midnight"] .signin-role-label {
+  color: #f1f5f9;
+}
+html[data-theme="midnight"] .signin-role-description {
+  color: #b8c5d7;
+}
+html[data-theme="midnight"] .signin-label {
+  color: #e2e8f0;
+}
+html[data-theme="midnight"] .signin-input {
+  border-color: #3a4b62;
+  background: #111c2c;
+  color: #f8fafc;
+  caret-color: #93c5fd;
+  color-scheme: dark;
+}
+html[data-theme="midnight"] .signin-input::placeholder {
+  color: #a7b5c8;
+  opacity: 1;
+}
+html[data-theme="midnight"] .signin-input:focus {
+  border-color: #60a5fa;
+  background: #142238;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgb(96 165 250 / 0.2);
+}
+html[data-theme="midnight"] .signin-input:-webkit-autofill,
+html[data-theme="midnight"] .signin-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc;
+  box-shadow: 0 0 0 1000px #142238 inset;
+}
+html[data-theme="midnight"] .signin-password-toggle {
+  color: #b7c5d8;
+}
+html[data-theme="midnight"] .signin-password-toggle:hover {
+  background: #263a54;
+  color: #f8fafc;
+}
+html[data-theme="midnight"] .signin-error {
+  border-color: #713b45;
+  background: #3a2028;
+  color: #fecaca;
+}
+html[data-theme="midnight"] .signin-security-note svg {
+  color: #5eead4;
 }
 @media (min-width: 1024px) {
   .signin-layout {
@@ -1850,9 +1860,6 @@ main .shadow-sm {
   }
 }
 @media (max-width: 360px) {
-  .signin-page {
-    padding-inline: 0.75rem;
-  }
   .signin-role-grid {
     gap: 0.35rem;
   }
@@ -1864,7 +1871,6 @@ main .shadow-sm {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .signin-top-links a,
   .signin-role,
   .signin-back-link,
   .signin-input,
@@ -4229,6 +4235,38 @@ html[data-theme="midnight"] .school-home {
   --home-line: #2a3850;
   background-color: #0b1220;
   color: var(--home-ink);
+}
+html[data-theme="midnight"] .landing-editor .text-slate-500 {
+  color: #c1ccda;
+}
+html[data-theme="midnight"] .landing-editor .text-slate-400 {
+  color: #a9b8cb;
+}
+html[data-theme="midnight"] .landing-editor .landing-hero-headline-editor {
+  border-color: #344967;
+  background: #172438;
+}
+html[data-theme="midnight"] .landing-editor .landing-hero-headline-editor h3 {
+  color: #f1f5f9;
+}
+html[data-theme="midnight"] .landing-editor .landing-hero-headline-editor p {
+  color: #c1ccda;
+}
+html[data-theme="midnight"] .landing-editor .landing-editor-field {
+  border-color: #3a4b62;
+  background-color: #111c2c;
+  color: #f8fafc;
+}
+html[data-theme="midnight"] .landing-editor .landing-editor-field::placeholder {
+  color: #9eacc0;
+}
+html[data-theme="midnight"] .landing-editor .landing-editor-field:focus {
+  border-color: #60a5fa;
+  background-color: #142238;
+  box-shadow: 0 0 0 2px rgb(96 165 250 / 0.2);
+}
+html[data-theme="midnight"] .landing-editor .landing-editor-counter {
+  color: #a9b8cb;
 }
 html[data-theme="midnight"] .landing-nav {
   border-color: #26344a;
