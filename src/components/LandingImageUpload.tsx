@@ -15,7 +15,7 @@ import { useState, type ChangeEvent } from "react";
 
 type Kind = "cover" | "logo" | "principal" | "topStudent" | "news" | "gallery" | "program" | "facility" | "event";
 const recommendedDimensions: Record<Kind, string> = {
-  cover: "1600 × 900 px or larger (landscape)",
+  cover: "1600 × 900 px or larger (16:9 landscape)",
   logo: "1024 × 1024 px or larger (square)",
   principal: "800 × 800 px (square)",
   topStudent: "800 × 800 px (square)",
@@ -137,7 +137,7 @@ export default function LandingImageUpload({ kind, value, onChange, label = "Ima
 
       <p className="mt-2 text-xs text-slate-500">
         {dimensions ? <>Selected image: {dimensions}. </> : null}
-        Recommended: {recommendedDimensions[kind]}. {kind === "cover" ? "Fully visible on phones; desktop may crop the edges to fill the banner." : kind === "logo" ? "Shown fully without cropping." : "Displayed in a responsive frame without stretching."}
+        Recommended: {recommendedDimensions[kind]}. {kind === "cover" ? "The homepage cover uses a 16:9 frame; photos with another ratio may be cropped." : kind === "logo" ? "Shown fully without cropping." : "Displayed in a responsive frame without stretching."}
       </p>
       {hint && <p className="mt-1 text-xs text-slate-400 max-w-xs sm:max-w-[16rem]">{hint}</p>}
       {error && <p className="mt-2 text-xs text-rose-600">{error}</p>}

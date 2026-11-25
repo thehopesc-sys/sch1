@@ -51,8 +51,6 @@ const homepageCopyGroups: { title: string; fields: HomepageCopyField[] }[] = [
     fields: [
       { key: "announcementLabel", label: "Announcement label" },
       { key: "heroEyebrow", label: "Hero welcome line (use {schoolName} for the school name)" },
-      { key: "heroTitle", label: "Hero headline, line one" },
-      { key: "heroTitleAccent", label: "Hero headline, line two" },
       { key: "heroPrimaryAction", label: "Primary hero button" },
       { key: "heroSecondaryAction", label: "Secondary hero button" },
       { key: "academicYearLabel", label: "Academic year prefix" },
@@ -273,6 +271,24 @@ export default function LandingEditorPage() {
 
         <div className="mt-6 space-y-6">
           <Panel title="Homepage text and headings" description="Change the public-facing wording while keeping the page layout and interaction labels clear.">
+            <section className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+              <h3 className="text-sm font-semibold text-slate-800">Homepage hero headline</h3>
+              <p className="mt-1 text-xs leading-5 text-slate-600">These two saved fields control the large headline at the top of your public homepage.</p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <Field
+                  label="Headline — first line"
+                  value={content.homepageCopy.heroTitle}
+                  onChange={(value) => setHomepageCopy("heroTitle", value)}
+                  maxLength={600}
+                />
+                <Field
+                  label="Headline — accent line"
+                  value={content.homepageCopy.heroTitleAccent}
+                  onChange={(value) => setHomepageCopy("heroTitleAccent", value)}
+                  maxLength={600}
+                />
+              </div>
+            </section>
             {homepageCopyGroups.map((group) => (
               <details key={group.title} className="rounded-xl border border-slate-200 p-4">
                 <summary className="cursor-pointer text-sm font-semibold text-slate-800">{group.title}</summary>
@@ -301,7 +317,7 @@ export default function LandingEditorPage() {
           </Panel>
 
           <Panel title="Hero banner" description="The first thing visitors see: a cover photo and a short tagline under the school name.">
-            <LandingImageUpload kind="cover" label="Cover photo" frameClass="h-40 w-full sm:w-56" value={content.coverImage} onChange={(url, publicId) => patch({ coverImage: url, coverImagePublicId: publicId })} hint="A wide landscape photo looks best. It sits behind the school name." />
+            <LandingImageUpload kind="cover" label="Cover photo" frameClass="aspect-video w-full sm:w-56" value={content.coverImage} onChange={(url, publicId) => patch({ coverImage: url, coverImagePublicId: publicId })} hint="Use a 16:9 landscape photo. The homepage displays the full image in a matching 16:9 frame." />
             <Field label="Tagline" value={content.tagline} onChange={(value) => patch({ tagline: value })} placeholder="A clearer school day for every learner." />
           </Panel>
 
