@@ -12,7 +12,6 @@ import {
   MapPin,
   MessageCircle,
   Phone,
-  Quote,
   Sparkles,
 } from "lucide-react";
 import { connectToDatabase } from "@/lib/mongodb";
@@ -46,6 +45,14 @@ function excerpt(value: string, limit: number) {
   if (value.length <= limit) return value;
   const boundary = value.lastIndexOf(" ", limit);
   return `${value.slice(0, boundary > limit * 0.6 ? boundary : limit).trimEnd()}…`;
+}
+
+function withoutStandaloneQuote(value: string) {
+  return value
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*["“‘][\s\S]*["”’]\s*$/.test(line))
+    .join("\n")
+    .trim();
 }
 
 function formatDate(value: string) {
@@ -110,6 +117,7 @@ export default async function Home() {
   const testimonials = visibleTestimonials(content);
   const admissionSteps = visibleAdmissionSteps(content);
   const recognitions = visibleRecognitions(content);
+  const principalMessage = withoutStandaloneQuote(content.principalMessage);
   const phone = text(school?.schoolPhone);
   const email = text(school?.schoolEmail);
   const address = text(school?.schoolAddress);
@@ -158,7 +166,23 @@ export default async function Home() {
         <div className="home-hero-inner">
           <div className="home-hero-copy" data-reveal>
             <p className="home-eyebrow"><span /> {copy.heroEyebrow.replace("{schoolName}", schoolName)}</p>
-            <h1>{copy.heroTitle}<span>{copy.heroTitleAccent}</span></h1>
+            <div className="home-hero-title-panel">
+              <div className="home-hero-title-art" aria-hidden="true">
+                <div className="home-learning-object">
+                  <div className="home-learning-object-orbit" />
+                  <div className="home-learning-object-card">
+                    <svg viewBox="0 0 64 64" fill="none">
+                      <path d="M32 17.5c-6.1-4-13.2-4.8-21-2.6v27.3c7.8-2.2 14.9-1.4 21 2.6m0-27.3c6.1-4 13.2-4.8 21-2.6v27.3c-7.8-2.2-14.9-1.4-21 2.6m0-27.3v27.3" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M18 22.5c3.4-.5 6.2-.1 9 1.1m19-1.1c-3.4-.5-6.2-.1-9 1.1M18 29c3.4-.5 6.2-.1 9 1.1m19-1.1c-3.4-.5-6.2-.1-9 1.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <path d="m47 9 1.5 3.5L52 14l-3.5 1.5L47 19l-1.5-3.5L42 14l3.5-1.5L47 9Z" fill="currentColor" />
+                    </svg>
+                  </div>
+                  <span className="home-learning-object-dot" />
+                </div>
+                <div className="home-hero-orb" />
+              </div>
+              <h1>{copy.heroTitle}<span>{copy.heroTitleAccent}</span></h1>
+            </div>
             <p className="home-hero-description">
               {content.tagline || excerpt(description, 190) || "Discover our school, meet our community, and find the information your family needs."}
             </p>
@@ -176,17 +200,6 @@ export default async function Home() {
           </div>
 
           <div className="home-hero-visual" data-reveal>
-            <div className="home-learning-object" aria-hidden="true">
-              <div className="home-learning-object-orbit" />
-              <div className="home-learning-object-card">
-                <svg viewBox="0 0 64 64" fill="none">
-                  <path d="M32 17.5c-6.1-4-13.2-4.8-21-2.6v27.3c7.8-2.2 14.9-1.4 21 2.6m0-27.3c6.1-4 13.2-4.8 21-2.6v27.3c-7.8-2.2-14.9-1.4-21 2.6m0-27.3v27.3" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M18 22.5c3.4-.5 6.2-.1 9 1.1m19-1.1c-3.4-.5-6.2-.1-9 1.1M18 29c3.4-.5 6.2-.1 9 1.1m19-1.1c-3.4-.5-6.2-.1-9 1.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="m47 9 1.5 3.5L52 14l-3.5 1.5L47 19l-1.5-3.5L42 14l3.5-1.5L47 9Z" fill="currentColor" />
-                </svg>
-              </div>
-              <span className="home-learning-object-dot" />
-            </div>
             <div className="home-hero-frame">
               <div className="home-hero-photo">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -198,7 +211,6 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            <div className="home-hero-orb" aria-hidden="true" />
             <div className="home-visual-orbit" aria-hidden="true" />
             <div className="home-visual-caption"><span>01</span> {copy.heroVisualCaption}</div>
           </div>
@@ -290,7 +302,7 @@ export default async function Home() {
         </section>
       ) : null}
 
-      {(content.principalName || content.principalMessage || content.principalPhoto) ? (
+      {(content.principalName || principalMessage || content.principalPhoto) ? (
         <section className="home-section home-principal">
           <div className="home-section-inner home-principal-layout" data-reveal>
             {content.principalPhoto ? (
@@ -300,9 +312,8 @@ export default async function Home() {
               </div>
             ) : null}
             <div className="home-principal-message">
-              <Quote className="home-quote-icon" size={30} aria-hidden="true" />
               <p className="home-section-kicker">{copy.principalEyebrow}</p>
-              {content.principalMessage ? <blockquote><ReadMoreText text={content.principalMessage} className="home-principal-quote" previewLength={520} /></blockquote> : null}
+              {principalMessage ? <blockquote><ReadMoreText text={principalMessage} className="home-principal-quote" previewLength={520} /></blockquote> : null}
               {content.principalName ? <p className="home-principal-name">{content.principalName}<span>{copy.principalRole}</span></p> : null}
             </div>
           </div>
