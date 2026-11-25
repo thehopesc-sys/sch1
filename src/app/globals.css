@@ -25,6 +25,37 @@
   0%, 100% { transform: translateY(0) rotate(-1deg); }
   50% { transform: translateY(-0.65rem) rotate(2deg); }
 }
+@keyframes home-learning-orbit-spin {
+  from { transform: rotateX(68deg) rotateZ(-24deg) rotate(0deg); }
+  to { transform: rotateX(68deg) rotateZ(-24deg) rotate(360deg); }
+}
+@keyframes home-learning-orbit-reverse {
+  from { transform: rotateX(72deg) rotateZ(48deg) rotate(0deg); }
+  to { transform: rotateX(72deg) rotateZ(48deg) rotate(-360deg); }
+}
+@keyframes home-learning-card-tilt {
+  0%, 100% { transform: rotateX(12deg) rotateY(-16deg) rotateZ(5deg) translateZ(0); }
+  50% { transform: rotateX(18deg) rotateY(-8deg) rotateZ(1deg) translateZ(8px); }
+}
+@keyframes home-learning-aura {
+  from { opacity: 0.48; transform: scale(0.9); }
+  to { opacity: 0.82; transform: scale(1.08); }
+}
+@keyframes home-learning-spark {
+  0%, 100% { filter: hue-rotate(0deg); transform: scale(0.9); }
+  50% { filter: hue-rotate(110deg); transform: scale(1.12); }
+}
+@keyframes home-rgb-border-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes home-hero-orb-float {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-0.65rem) rotate(8deg); }
+}
+@keyframes home-hero-orb-ring {
+  from { transform: rotateX(68deg) rotateZ(25deg) rotate(0deg); }
+  to { transform: rotateX(68deg) rotateZ(25deg) rotate(360deg); }
+}
 
 /* Theme 2 · Emerald ------------------------------------------------------ */
 [data-theme="emerald"],
@@ -2037,6 +2068,17 @@ html:has(.school-home) {
   background: #1e40af;
   transform: translateY(-1px);
 }
+.landing-mobile-login {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.landing-mobile-login:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+  transform: translateY(-1px);
+}
 .landing-mobile-menu {
   position: fixed;
   inset: 0;
@@ -2084,7 +2126,8 @@ body.landing-menu-open .home-floating-whatsapp {
 }
 .landing-mobile-menu-heading button:focus-visible,
 .landing-mobile-link:focus-visible,
-.landing-mobile-signin:focus-visible {
+.landing-mobile-signin:focus-visible,
+.landing-mobile-login:focus-visible {
   outline: 3px solid #60a5fa;
   outline-offset: 3px;
 }
@@ -2311,16 +2354,45 @@ body.landing-menu-open .home-floating-whatsapp {
   min-width: 0;
   padding: 0 0.3rem 1.8rem;
 }
+.home-hero-frame {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 1.55rem;
+  padding: 3px;
+  background: #172554;
+  box-shadow:
+    0 0 20px -9px rgb(34 211 238 / 0.56),
+    0 0 25px -14px rgb(217 70 239 / 0.48),
+    0 28px 65px -36px rgb(15 23 42 / 0.52);
+}
+.home-hero-frame::before {
+  position: absolute;
+  z-index: 0;
+  inset: -65%;
+  background: conic-gradient(
+    from 0deg,
+    #22d3ee 0deg,
+    #3b82f6 88deg,
+    #a855f7 178deg,
+    #ec4899 268deg,
+    #22d3ee 360deg
+  );
+  content: "";
+  opacity: 0.9;
+  animation: home-rgb-border-spin 10s linear infinite;
+}
 .home-hero-photo {
   position: relative;
   z-index: 1;
   width: 100%;
   height: clamp(17rem, 57vw, 28rem);
   overflow: hidden;
-  border: 0.45rem solid rgb(255 255 255 / 0.92);
+  border: 0;
   border-radius: 1.35rem;
   background: #dbeafe;
-  box-shadow: 0 28px 65px -36px rgb(15 23 42 / 0.52);
 }
 .home-hero-photo > img {
   display: block;
@@ -2391,6 +2463,30 @@ body.landing-menu-open .home-floating-whatsapp {
   pointer-events: none;
   animation: home-learning-float 6.5s ease-in-out infinite;
 }
+.home-learning-object::before,
+.home-learning-object::after {
+  position: absolute;
+  inset: -0.15rem;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+.home-learning-object::before {
+  background:
+    radial-gradient(circle at 25% 28%, rgb(34 211 238 / 0.52), transparent 38%),
+    radial-gradient(circle at 75% 72%, rgb(217 70 239 / 0.44), transparent 42%),
+    radial-gradient(circle at 26% 78%, rgb(59 130 246 / 0.4), transparent 40%);
+  filter: blur(13px);
+  animation: home-learning-aura 5s ease-in-out infinite alternate;
+}
+.home-learning-object::after {
+  inset: -0.35rem;
+  border-color: rgb(192 132 252 / 0.52);
+  box-shadow: 0 0 12px rgb(168 85 247 / 0.25), inset 0 0 10px rgb(34 211 238 / 0.12);
+  transform: rotateX(72deg) rotateZ(48deg);
+  animation: home-learning-orbit-reverse 18s linear infinite;
+}
 .home-learning-object-card {
   position: relative;
   z-index: 1;
@@ -2406,6 +2502,7 @@ body.landing-menu-open .home-floating-whatsapp {
   transform: rotateX(12deg) rotateY(-16deg) rotateZ(5deg);
   transform-style: preserve-3d;
   backdrop-filter: blur(12px);
+  animation: home-learning-card-tilt 7s ease-in-out infinite;
 }
 .home-learning-object-card::after {
   position: absolute;
@@ -2427,9 +2524,10 @@ body.landing-menu-open .home-floating-whatsapp {
 .home-learning-object-orbit {
   position: absolute;
   inset: 0;
-  border: 1px solid rgb(96 165 250 / 0.48);
+  border: 1px solid rgb(34 211 238 / 0.62);
   border-radius: 50%;
-  transform: rotateX(68deg) rotateZ(-24deg);
+  box-shadow: 0 0 12px rgb(34 211 238 / 0.24);
+  animation: home-learning-orbit-spin 13s linear infinite;
 }
 .home-learning-object-dot {
   position: absolute;
@@ -2439,8 +2537,44 @@ body.landing-menu-open .home-floating-whatsapp {
   aspect-ratio: 1;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #fbbf24;
-  box-shadow: 0 5px 12px rgb(15 23 42 / 0.25);
+  background: #22d3ee;
+  box-shadow: 0 0 15px rgb(34 211 238 / 0.8), 0 5px 12px rgb(15 23 42 / 0.25);
+  animation: home-learning-spark 4.5s ease-in-out infinite;
+}
+.home-hero-orb {
+  position: absolute;
+  z-index: 3;
+  top: 44%;
+  left: -1.15rem;
+  width: 3.2rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: drop-shadow(0 10px 12px rgb(15 23 42 / 0.3));
+  pointer-events: none;
+  animation: home-hero-orb-float 5.8s ease-in-out infinite;
+}
+.home-hero-orb::before,
+.home-hero-orb::after {
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+}
+.home-hero-orb::before {
+  inset: 0;
+  background:
+    radial-gradient(circle at 27% 22%, #fff 0 3%, #a5f3fc 7%, transparent 16%),
+    radial-gradient(circle at 30% 28%, #67e8f9 0%, #3b82f6 34%, #4338ca 68%, #111827 100%);
+  box-shadow:
+    inset -0.45rem -0.5rem 0.8rem rgb(15 23 42 / 0.55),
+    inset 0.2rem 0.15rem 0.35rem rgb(255 255 255 / 0.38),
+    0 0 20px rgb(34 211 238 / 0.36);
+}
+.home-hero-orb::after {
+  inset: -0.4rem -0.62rem;
+  border: 1px solid rgb(232 121 249 / 0.78);
+  box-shadow: 0 0 12px rgb(168 85 247 / 0.42);
+  transform: rotateX(68deg) rotateZ(25deg);
+  animation: home-hero-orb-ring 8s linear infinite;
 }
 .home-visual-caption {
   position: absolute;
@@ -3039,7 +3173,9 @@ body.landing-menu-open .home-floating-whatsapp {
   padding: 1rem 1.1rem 1.2rem;
 }
 .home-gallery {
-  background: #f1f4f8;
+  background:
+    radial-gradient(ellipse at 86% 12%, rgb(191 219 254 / 0.24), transparent 34%),
+    #f1f4f8;
 }
 .home-gallery-filters {
   display: flex;
@@ -3077,8 +3213,13 @@ body.landing-menu-open .home-floating-whatsapp {
   border-radius: 0.9rem;
   padding: 0;
   background: #dbeafe;
+  box-shadow: 0 16px 38px -28px rgb(15 23 42 / 0.58);
   cursor: zoom-in;
   text-align: left;
+}
+.home-gallery-item:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
 }
 .home-gallery-item-0,
 .home-gallery-item-3 {
@@ -3485,6 +3626,9 @@ body.landing-menu-open .home-floating-whatsapp {
     height: clamp(23rem, 38vw, 34rem);
     border-radius: 1.7rem;
   }
+  .home-hero-frame {
+    border-radius: 1.9rem;
+  }
   .home-hero h1 {
     font-size: clamp(3.2rem, 5.3vw, 5.2rem);
   }
@@ -3547,6 +3691,11 @@ body.landing-menu-open .home-floating-whatsapp {
   .home-hero-photo {
     height: clamp(16rem, 70vw, 23rem);
   }
+  .home-hero-orb {
+    top: 43%;
+    left: 0.4rem;
+    width: 2.7rem;
+  }
   .home-section-heading,
   .home-admissions-inner {
     align-items: flex-start;
@@ -3595,6 +3744,14 @@ body.landing-menu-open .home-floating-whatsapp {
   .landing-mobile-menu,
   .home-back-to-top,
   .home-visual-orbit,
+  .home-hero-frame::before,
+  .home-hero-orb,
+  .home-hero-orb::after,
+  .home-learning-object::before,
+  .home-learning-object::after,
+  .home-learning-object-orbit,
+  .home-learning-object-card,
+  .home-learning-object-dot,
   .home-scroll-cue {
     animation: none;
   }
@@ -3653,10 +3810,33 @@ html[data-theme="midnight"] .landing-mobile-link:hover {
   background: #1b2940;
   color: #fff;
 }
+html[data-theme="midnight"] .landing-mobile-login {
+  border-color: #3a4b64;
+  background: #151f30;
+  color: #bfdbfe;
+}
+html[data-theme="midnight"] .landing-mobile-login:hover {
+  border-color: #60738f;
+  background: #1b2940;
+}
 html[data-theme="midnight"] .home-hero {
   background:
     radial-gradient(ellipse at 87% 45%, rgb(37 99 235 / 0.17), transparent 38%),
     linear-gradient(135deg, #0d1524 0%, #101a2b 58%, #131f33 100%);
+}
+html[data-theme="midnight"] .home-hero-frame {
+  background: #0b1220;
+  box-shadow:
+    0 0 26px -8px rgb(34 211 238 / 0.7),
+    0 0 36px -12px rgb(217 70 239 / 0.62),
+    0 28px 65px -36px rgb(15 23 42 / 0.72);
+}
+html[data-theme="midnight"] .home-hero-frame::before {
+  opacity: 1;
+}
+html[data-theme="midnight"] .home-hero-orb::after {
+  border-color: rgb(103 232 249 / 0.85);
+  box-shadow: 0 0 15px rgb(34 211 238 / 0.62), 0 0 24px rgb(168 85 247 / 0.42);
 }
 html[data-theme="midnight"] .home-hero::before {
   border-color: rgb(147 197 253 / 0.12);
@@ -3672,6 +3852,12 @@ html[data-theme="midnight"] .home-achievement-copy h3,
 html[data-theme="midnight"] .home-news-copy h3,
 html[data-theme="midnight"] .home-event-copy h3 {
   color: #f1f5f9;
+}
+html[data-theme="midnight"] .home-hero h1 span {
+  background: linear-gradient(100deg, #67e8f9, #a5b4fc 52%, #e879f9);
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 html[data-theme="midnight"] .home-eyebrow,
 html[data-theme="midnight"] .home-section-kicker,
@@ -3715,6 +3901,12 @@ html[data-theme="midnight"] .home-news,
 html[data-theme="midnight"] .home-events,
 html[data-theme="midnight"] .home-contact {
   background: #0b1220;
+}
+html[data-theme="midnight"] .home-gallery {
+  background:
+    radial-gradient(ellipse at 82% 10%, rgb(34 211 238 / 0.09), transparent 36%),
+    radial-gradient(ellipse at 12% 88%, rgb(168 85 247 / 0.08), transparent 32%),
+    #101a2b;
 }
 html[data-theme="midnight"] .home-trust,
 html[data-theme="midnight"] .home-highlights,
@@ -3781,6 +3973,27 @@ html[data-theme="midnight"] .home-button-secondary:hover {
   border-color: #60738f;
   background: #1c2a40;
 }
+html[data-theme="midnight"] .home-learning-object-card {
+  border-color: rgb(103 232 249 / 0.55);
+  background: linear-gradient(145deg, rgb(15 23 42 / 0.96), rgb(30 41 59 / 0.88));
+  box-shadow: 0 18px 38px -18px rgb(34 211 238 / 0.26), inset 0 1px 0 rgb(255 255 255 / 0.14);
+  color: #67e8f9;
+}
+html[data-theme="midnight"] .home-learning-object-card::after {
+  background: linear-gradient(90deg, #22d3ee, #a855f7, #ec4899);
+}
+html[data-theme="midnight"] .home-learning-object-orbit {
+  border-color: rgb(103 232 249 / 0.72);
+  box-shadow: 0 0 16px rgb(34 211 238 / 0.42);
+}
+html[data-theme="midnight"] .home-learning-object::after {
+  border-color: rgb(232 121 249 / 0.7);
+  box-shadow: 0 0 18px rgb(168 85 247 / 0.42), inset 0 0 12px rgb(34 211 238 / 0.18);
+}
+html[data-theme="midnight"] .home-learning-object-dot {
+  border-color: #0b1220;
+  box-shadow: 0 0 18px rgb(34 211 238 / 0.9), 0 0 28px rgb(217 70 239 / 0.42);
+}
 html[data-theme="midnight"] .home-scroll-cue,
 html[data-theme="midnight"] .home-gallery-filters button,
 html[data-theme="midnight"] .home-testimonial-controls button {
@@ -3792,6 +4005,13 @@ html[data-theme="midnight"] .home-gallery-filters button[aria-pressed="true"] {
   border-color: #2563eb;
   background: #1d4ed8;
   color: #fff;
+}
+html[data-theme="midnight"] .home-gallery-item {
+  background: #1c2a40;
+  box-shadow: 0 16px 40px -26px rgb(0 0 0 / 0.82), inset 0 0 0 1px rgb(147 197 253 / 0.12);
+}
+html[data-theme="midnight"] .home-gallery-item:focus-visible {
+  outline-color: #67e8f9;
 }
 html[data-theme="midnight"] .home-contact-item {
   border-bottom-color: #2a3850;

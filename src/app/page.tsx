@@ -189,15 +189,18 @@ export default async function Home() {
               </div>
               <span className="home-learning-object-dot" />
             </div>
-            <div className="home-hero-photo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={coverImage} alt={`${schoolName} campus`} fetchPriority="high" />
-              <div className="home-photo-shade" />
-              <div className="home-photo-label">
-                <span className="home-photo-label-icon"><GraduationCap size={19} aria-hidden="true" /></span>
-                <span><strong>{schoolName}</strong><small>{copy.heroPhotoSubtitle}</small></span>
+            <div className="home-hero-frame">
+              <div className="home-hero-photo">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={coverImage} alt={`${schoolName} campus`} fetchPriority="high" />
+                <div className="home-photo-shade" />
+                <div className="home-photo-label">
+                  <span className="home-photo-label-icon"><GraduationCap size={19} aria-hidden="true" /></span>
+                  <span><strong>{schoolName}</strong><small>{copy.heroPhotoSubtitle}</small></span>
+                </div>
               </div>
             </div>
+            <div className="home-hero-orb" aria-hidden="true" />
             <div className="home-visual-orbit" aria-hidden="true" />
             <div className="home-visual-caption"><span>01</span> {copy.heroVisualCaption}</div>
           </div>
